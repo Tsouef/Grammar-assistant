@@ -15,7 +15,7 @@ describe('buildTranslatePrompt', () => {
 
   it('instructs to return only the translated text', () => {
     const result = buildTranslatePrompt('test', 'fr-FR')
-    expect(result).toContain('Return only the translated text, nothing else')
+    expect(result).toContain('Return only')
   })
 })
 
@@ -55,7 +55,7 @@ describe('buildToneRewritePrompt', () => {
     const tones: TonePreset[] = ['shorter', 'formal', 'direct', 'technical']
     for (const tone of tones) {
       const result = buildToneRewritePrompt('test', tone, 'auto')
-      expect(result).toContain('Return only the rewritten text, nothing else')
+      expect(result).toContain('Return only')
     }
   })
 

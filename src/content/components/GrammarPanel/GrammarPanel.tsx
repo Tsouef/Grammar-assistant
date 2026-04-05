@@ -159,6 +159,9 @@ export const GrammarPanel = memo(
             {isOpen && (
               <motion.div
                 className="panel"
+                role="dialog"
+                aria-label={t('panel.panelLabel')}
+                aria-modal="true"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 8 }}

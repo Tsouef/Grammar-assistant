@@ -82,7 +82,7 @@ function AppForm({ config, saveConfig }: AppFormProps) {
       .sendMessage({ type: 'GET_OLLAMA_MODELS', baseUrl: ollamaBaseUrl })
       .then((response: { models: string[] }) => {
         if (!cancelled) {
-          setOllamaModels(response.models)
+          setOllamaModels(response?.models ?? [])
           setOllamaModelsStatus('idle')
         }
       })

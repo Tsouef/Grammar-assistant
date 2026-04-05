@@ -1,3 +1,6 @@
+import { useTranslation } from 'react-i18next'
+
 export function Spinner() {
-  return <span className="spinner" />
+  const { t } = useTranslation()
+  return <span className="spinner" role="status" aria-label={t('panel.checking')} />
 }

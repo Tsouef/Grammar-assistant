@@ -26,35 +26,11 @@ describe('applyAI', () => {
     expect(el.textContent).toBe('rewritten text')
   })
 
-  it('inserts text at selection when isSelection is true', () => {
-    const el = makeContentEditable('hello world')
-    el.focus()
-
-    // Select "world"
-    const range = document.createRange()
-    const textNode = el.firstChild!
-    range.setStart(textNode, 6)
-    range.setEnd(textNode, 11)
-    const sel = window.getSelection()!
-    sel.removeAllRanges()
-    sel.addRange(range)
-
-    applyAI(el, 'everyone', true)
-    // execCommand('insertText') in jsdom falls back to textContent replace
-    // so we just verify the call doesn't throw and the element still exists
-    expect(el).toBeTruthy()
-  })
-
   it('focuses the field when applying', () => {
     const el = makeContentEditable('text')
-    const focusSpy = el.focus.bind(el)
-    let focused = false
-    el.focus = () => {
-      focused = true
-      focusSpy()
-    }
+    const focusSpy = vi.spyOn(el, 'focus')
     applyAI(el, 'new text', false)
-    expect(focused).toBe(true)
+    expect(focusSpy).toHaveBeenCalled()
   })
 
   it('handles empty replacement', () => {

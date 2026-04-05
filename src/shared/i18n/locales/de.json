@@ -23,6 +23,7 @@
     "showHide": "Anzeigen/verbergen"
   },
   "panel": {
+    "panelLabel": "Grammatik-Assistent",
     "checking": "Prüfen…",
     "translating": "Übersetzen…",
     "rewriting": "Umschreiben…",
@@ -39,7 +40,8 @@
     "translateTo": "Übersetzen nach",
     "go": "Los",
     "configureProvider": "Einen Anbieter in den Einstellungen konfigurieren",
-    "openSettings": "Einstellungen öffnen"
+    "openSettings": "Einstellungen öffnen",
+    "openPanel": "Grammatik-Assistent öffnen"
   },
   "tone": {
     "shorter": "Kürzer",

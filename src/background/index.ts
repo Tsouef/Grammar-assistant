@@ -10,7 +10,7 @@ chrome.runtime.onMessage.addListener(
   }
 )
 
-async function handleMessage(message: BackgroundMessage): Promise<BackgroundResponse> {
+export async function handleMessage(message: BackgroundMessage): Promise<BackgroundResponse> {
   if (message.type === 'GET_OLLAMA_MODELS') {
     try {
       const models = await fetchOllamaModels(message.baseUrl)

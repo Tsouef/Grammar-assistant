@@ -1,6 +1,7 @@
 import { type CSSProperties, useLayoutEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { EASE_OUT, MAX_Z_INDEX } from '../../../shared/constants'
 
 const BUTTON_STYLE: CSSProperties = {
@@ -27,6 +28,7 @@ interface TriggerButtonProps {
 }
 
 export function TriggerButton({ field, onClick }: TriggerButtonProps) {
+  const { t } = useTranslation()
   const [position, setPosition] = useState({ top: 0, left: 0 })
 
   useLayoutEffect(() => {
@@ -53,6 +55,7 @@ export function TriggerButton({ field, onClick }: TriggerButtonProps) {
 
   return createPortal(
     <motion.button
+      aria-label={t('panel.openPanel')}
       style={{ ...BUTTON_STYLE, top: position.top, left: position.left }}
       onClick={onClick}
       onMouseDown={(e) => e.preventDefault()}

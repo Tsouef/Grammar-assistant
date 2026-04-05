@@ -1,6 +1,7 @@
 import type { AIRewriteMessage, AIRewriteResponse, TonePreset } from '../../shared/types'
 import { toErrorMessage } from '../../shared/constants'
 import { sendBackgroundMessage } from './messaging'
+import i18n from '../../shared/i18n/i18n'
 
 export function requestAIRewrite(
   field: HTMLElement,
@@ -11,7 +12,7 @@ export function requestAIRewrite(
 ): void {
   const text = field.textContent ?? ''
   if (!text.trim()) {
-    onError('Nothing to rewrite')
+    onError(i18n.t('error.nothingToRewrite'))
     return
   }
 

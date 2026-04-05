@@ -23,6 +23,7 @@
     "showHide": "Tonen/verbergen"
   },
   "panel": {
+    "panelLabel": "Grammatica-assistent",
     "checking": "Controleren…",
     "translating": "Vertalen…",
     "rewriting": "Herschrijven…",
@@ -39,7 +40,8 @@
     "translateTo": "Vertalen naar",
     "go": "Ga",
     "configureProvider": "Configureer een aanbieder in de instellingen",
-    "openSettings": "Instellingen openen"
+    "openSettings": "Instellingen openen",
+    "openPanel": "Grammatica-assistent openen"
   },
   "tone": {
     "shorter": "Korter",

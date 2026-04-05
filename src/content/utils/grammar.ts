@@ -10,6 +10,7 @@ import {
   toErrorMessage,
 } from '../../shared/constants'
 import { sendBackgroundMessage } from './messaging'
+import i18n from '../../shared/i18n/i18n'
 
 export function createGrammarChecker(
   language: string,
@@ -31,12 +32,12 @@ export function createGrammarChecker(
       }
 
       if (text.length > MAX_GRAMMAR_TEXT_LENGTH) {
-        onError(`Text too long — checking first ${MAX_GRAMMAR_TEXT_LENGTH} characters`)
+        onError(i18n.t('error.textTooLong', { max: MAX_GRAMMAR_TEXT_LENGTH }))
         text = text.slice(0, MAX_GRAMMAR_TEXT_LENGTH)
       }
 
       if (Date.now() < backoffUntil) {
-        onError('Rate limit — please wait a moment')
+        onError(i18n.t('error.rateLimited'))
         return
       }
 
@@ -48,7 +49,7 @@ export function createGrammarChecker(
           const msg = toErrorMessage(err)
           if (msg === 'RATE_LIMIT') {
             backoffUntil = Date.now() + RATE_LIMIT_BACKOFF_MS
-            onError('Rate limit — please wait a moment')
+            onError(i18n.t('error.rateLimited'))
           } else {
             onError(msg)
           }

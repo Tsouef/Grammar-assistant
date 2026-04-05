@@ -12,8 +12,11 @@ export function TranslateBar({ onRequestTranslate }: TranslateBarProps) {
 
   return (
     <div className="translate-bar">
-      <span className="translate-label">{t('panel.translateTo')}</span>
+      <label className="translate-label" htmlFor="grammar-assistant-translate-lang">
+        {t('panel.translateTo')}
+      </label>
       <select
+        id="grammar-assistant-translate-lang"
         className="translate-select"
         value={targetLang}
         onChange={(e) => setTargetLang(e.target.value)}

@@ -23,6 +23,7 @@
     "showHide": "Show/hide"
   },
   "panel": {
+    "panelLabel": "Grammar Assistant",
     "checking": "Checking…",
     "translating": "Translating…",
     "rewriting": "Rewriting…",
@@ -39,7 +40,8 @@
     "translateTo": "Translate to",
     "go": "Go",
     "configureProvider": "Configure a provider in settings",
-    "openSettings": "Open settings"
+    "openSettings": "Open settings",
+    "openPanel": "Open Grammar Assistant"
   },
   "tone": {
     "shorter": "Shorter",

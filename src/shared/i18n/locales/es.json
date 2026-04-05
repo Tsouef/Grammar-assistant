@@ -23,6 +23,7 @@
     "showHide": "Mostrar/ocultar"
   },
   "panel": {
+    "panelLabel": "Asistente gramatical",
     "checking": "Comprobando…",
     "translating": "Traduciendo…",
     "rewriting": "Reescribiendo…",
@@ -39,7 +40,8 @@
     "translateTo": "Traducir a",
     "go": "Ir",
     "configureProvider": "Configurar un proveedor en los ajustes",
-    "openSettings": "Abrir ajustes"
+    "openSettings": "Abrir ajustes",
+    "openPanel": "Abrir asistente gramatical"
   },
   "tone": {
     "shorter": "Más corto",

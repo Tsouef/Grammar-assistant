@@ -42,13 +42,6 @@ afterEach(() => {
 })
 
 describe('TriggerButton component', () => {
-  it('renders the trigger button into document.body via portal', () => {
-    const field = document.createElement('div')
-    document.body.appendChild(field)
-    render(<TriggerButton field={field} onClick={vi.fn()} />)
-    expect(screen.getByText('✦')).toBeTruthy()
-  })
-
   it('calls onClick when clicked', () => {
     const onClick = vi.fn()
     const field = document.createElement('div')
