@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useConfig } from './hooks/useConfig'
-import type { Config, ProviderId, UiLocale } from '../shared/types'
+import type { Config, ProviderId, UiLocale, UiTheme } from '../shared/types'
 import { EASE_OUT, SAVED_VISIBLE_DURATION_MS } from '../shared/constants'
 import { PROVIDER_IDS } from '../shared/models'
 import i18n from '../shared/i18n/i18n'
@@ -11,6 +11,7 @@ import { ProviderSection } from './components/ProviderSection/ProviderSection'
 import type { PerProviderState } from './components/ProviderSection/ProviderSection'
 import { LanguageSection } from './components/LanguageSection/LanguageSection'
 import { UiLanguageSection } from './components/UiLanguageSection/UiLanguageSection'
+import { ThemeSection } from './components/ThemeSection/ThemeSection'
 import { DisabledSitesSection } from './components/DisabledSitesSection/DisabledSitesSection'
 import { SaveButton } from './components/SaveButton/SaveButton'
 import { SavedMessage } from './components/SavedMessage/SavedMessage'
@@ -28,6 +29,7 @@ const containerVariants = {
 export default function App() {
   const { config, saveConfig } = useConfig()
   if (!config) return null
+  document.body.dataset.theme = config.uiTheme ?? 'dark'
   return <AppForm config={config} saveConfig={saveConfig} />
 }
 
@@ -57,6 +59,7 @@ function AppForm({ config, saveConfig }: AppFormProps) {
   )
   const [language, setLanguage] = useState<Config['language']>(config.language)
   const [uiLanguage, setUiLanguage] = useState<UiLocale>(config.uiLanguage)
+  const [uiTheme, setUiTheme] = useState<UiTheme>(config.uiTheme ?? 'dark')
   const [domains, setDomains] = useState([...config.disabledDomains])
   const [errors, setErrors] = useState<{ apiKey?: boolean; baseUrl?: boolean; model?: boolean }>({})
   const [savedVisible, setSavedVisible] = useState(false)
@@ -95,6 +98,11 @@ function AppForm({ config, saveConfig }: AppFormProps) {
   function handleUiLanguageChange(locale: UiLocale) {
     setUiLanguage(locale)
     i18n.changeLanguage(locale)
+  }
+
+  function handleUiThemeChange(theme: UiTheme) {
+    setUiTheme(theme)
+    document.body.dataset.theme = theme
   }
 
   function handleAddDomain(domain: string) {
@@ -136,6 +144,7 @@ function AppForm({ config, saveConfig }: AppFormProps) {
       providers,
       language,
       uiLanguage,
+      uiTheme,
       disabledDomains: domains,
     }
     await saveConfig(newConfig)
@@ -167,6 +176,9 @@ function AppForm({ config, saveConfig }: AppFormProps) {
         </motion.div>
         <motion.div variants={sectionVariants} transition={{ duration: 0.3, ease: EASE_OUT }}>
           <UiLanguageSection value={uiLanguage} onChange={handleUiLanguageChange} />
+        </motion.div>
+        <motion.div variants={sectionVariants} transition={{ duration: 0.3, ease: EASE_OUT }}>
+          <ThemeSection value={uiTheme} onChange={handleUiThemeChange} />
         </motion.div>
         <motion.div variants={sectionVariants} transition={{ duration: 0.3, ease: EASE_OUT }}>
           <DisabledSitesSection

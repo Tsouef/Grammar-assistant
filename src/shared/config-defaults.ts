@@ -11,6 +11,7 @@ export const DEFAULT_CONFIG: Config = {
   ],
   language: 'auto',
   uiLanguage: 'en',
+  uiTheme: 'dark',
   disabledDomains: [],
 }
 

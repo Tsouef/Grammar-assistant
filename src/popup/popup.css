@@ -22,6 +22,7 @@ body {
   --accent-blue: #0ea5e9;
   --danger: #f43f5e;
   --success: #00d4aa;
+  --btn-ghost-bg: rgba(255, 255, 255, 0.04);
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -81,6 +82,32 @@ select option {
   margin-bottom: 7px;
 }
 
+/* ─── Light theme ────────────────────────────────────────────────────────── */
+
+body[data-theme='light'] {
+  --btn-ghost-bg: rgba(0, 0, 0, 0.03);
+  --bg-primary: #f4f5f9;
+  --bg-secondary: #ffffff;
+  --bg-surface: rgba(255, 255, 255, 0.97);
+  --bg-input: #ebebf0;
+  --border-primary: rgba(0, 0, 0, 0.09);
+  --border-accent: rgba(0, 168, 142, 0.3);
+  --text-primary: #0d0e14;
+  --text-secondary: #4e5063;
+  --text-muted: #878a9a;
+  --accent: #00a88e;
+  --accent-hover: #00bf9f;
+  --accent-glow: rgba(0, 168, 142, 0.12);
+  --accent-blue: #0270b0;
+  --danger: #dc2626;
+  --success: #00a88e;
+}
+
+body[data-theme='light'] select option {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
 /* ─── Scrollbar ──────────────────────────────────────────────────────────── */
 
 ::-webkit-scrollbar {
@@ -95,4 +122,11 @@ select option {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 212, 170, 0.3);
+}
+
+body[data-theme='light'] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+}
+body[data-theme='light'] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 168, 142, 0.4);
 }

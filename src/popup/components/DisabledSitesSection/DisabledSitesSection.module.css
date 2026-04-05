@@ -20,7 +20,7 @@
 
 .addBtn {
   padding: 7px 11px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--btn-ghost-bg);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-sm);
   cursor: pointer;

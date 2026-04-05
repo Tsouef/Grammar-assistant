@@ -1,6 +1,9 @@
 {
   "popup": {
     "save": "Save Settings",
-    "saved": "Saved"
+    "saved": "Saved",
+    "uiTheme": "Appearance",
+    "themeDark": "Dark",
+    "themeLight": "Light"
   }
 }

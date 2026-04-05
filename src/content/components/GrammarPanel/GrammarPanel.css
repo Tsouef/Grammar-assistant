@@ -81,3 +81,72 @@
 .panel::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 212, 170, 0.3);
 }
+
+/* ─── Light theme tokens ─────────────────────────────────────────────────── */
+
+:host([data-theme='light']) {
+  --bg-primary: #f4f5f9;
+  --bg-secondary: #ffffff;
+  --bg-surface: rgba(255, 255, 255, 0.97);
+  --bg-input: #ebebf0;
+  --border-primary: rgba(0, 0, 0, 0.09);
+  --border-accent: rgba(0, 168, 142, 0.3);
+  --text-primary: #0d0e14;
+  --text-secondary: #4e5063;
+  --text-muted: #878a9a;
+  --accent: #00a88e;
+  --accent-hover: #00bf9f;
+  --accent-glow: rgba(0, 168, 142, 0.12);
+  --accent-blue: #0270b0;
+  --danger: #dc2626;
+  --success: #00a88e;
+  --warning: #d97706;
+}
+
+/* ─── Light theme component overrides ───────────────────────────────────── */
+
+:host([data-theme='light']) .panel {
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.04) inset;
+}
+
+:host([data-theme='light']) .header,
+:host([data-theme='light']) .translate-bar,
+:host([data-theme='light']) .tone-bar,
+:host([data-theme='light']) .actions {
+  background: rgba(0, 0, 0, 0.025);
+}
+
+:host([data-theme='light']) .btn-secondary {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+:host([data-theme='light']) .btn-secondary:hover {
+  border-color: rgba(0, 0, 0, 0.15);
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.06);
+}
+
+:host([data-theme='light']) .btn-improve:disabled {
+  background: rgba(0, 0, 0, 0.07);
+  color: var(--text-muted);
+}
+
+:host([data-theme='light']) .btn-tone:hover {
+  border-color: rgba(0, 168, 142, 0.4);
+}
+
+:host([data-theme='light']) .spinner {
+  border-color: rgba(0, 0, 0, 0.12);
+  border-top-color: var(--accent);
+}
+
+:host([data-theme='light']) .panel::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+:host([data-theme='light']) .panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 168, 142, 0.4);
+}

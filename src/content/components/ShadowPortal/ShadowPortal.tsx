@@ -10,10 +10,11 @@ interface ShadowPortalProps {
   children: ReactNode
   style?: CSSProperties
   id?: string
+  theme?: string
 }
 
 export const ShadowPortal = forwardRef<ShadowPortalHandle, ShadowPortalProps>(
-  ({ children, style, id }, ref) => {
+  ({ children, style, id, theme }, ref) => {
     const hostRef = useRef<HTMLDivElement>(null)
     const [mountPoint, setMountPoint] = useState<HTMLElement | null>(null)
 
@@ -38,7 +39,7 @@ export const ShadowPortal = forwardRef<ShadowPortalHandle, ShadowPortalProps>(
 
     return (
       <>
-        <div ref={hostRef} id={id} style={style} />
+        <div ref={hostRef} id={id} style={style} data-theme={theme} />
         {mountPoint && createPortal(children, mountPoint)}
       </>
     )

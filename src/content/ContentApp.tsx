@@ -51,6 +51,7 @@ export function ContentApp({ config: initialConfig }: ContentAppProps) {
         isOpen={isPanelOpen}
         state={state}
         field={panelField}
+        theme={config.uiTheme ?? 'dark'}
         onRequestAI={handleRequestAI}
         onApplyAI={handleApplyAI}
         onRequestTranslate={handleRequestTranslate}

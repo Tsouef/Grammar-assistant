@@ -22,6 +22,7 @@ interface GrammarPanelProps {
   isOpen: boolean
   state: PanelState
   field: HTMLElement | null
+  theme?: string
   onRequestAI: (tone?: TonePreset) => void
   onApplyAI: (rewritten: string, isSelection: boolean) => void
   onRequestTranslate: (targetLang: string) => void
@@ -50,7 +51,7 @@ function ErrorSection({ segments, onRequestAI }: ErrorSectionProps) {
 }
 
 export const GrammarPanel = memo(forwardRef<GrammarPanelHandle, GrammarPanelProps>(
-  ({ isOpen, state, field, onRequestAI, onApplyAI, onRequestTranslate, onClose, onDismiss, onOpenSettings }, ref) => {
+  ({ isOpen, state, field, theme, onRequestAI, onApplyAI, onRequestTranslate, onClose, onDismiss, onOpenSettings }, ref) => {
     const { t } = useTranslation()
     const shadowRef = useRef<ShadowPortalHandle>(null)
 
@@ -124,7 +125,7 @@ export const GrammarPanel = memo(forwardRef<GrammarPanelHandle, GrammarPanelProp
     }, [field, isOpen])
 
     return (
-      <ShadowPortal ref={shadowRef} id="grammar-assistant-panel-host" style={hostStyle}>
+      <ShadowPortal ref={shadowRef} id="grammar-assistant-panel-host" style={hostStyle} theme={theme}>
         <AnimatePresence>
           {isOpen && (
             <motion.div
