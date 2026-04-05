@@ -2,7 +2,7 @@
 
 A Chrome extension that brings AI-powered grammar checking, rewriting, and translation directly into any text field on the web — no copy-pasting, no context switching.
 
-Powered by the **Gemini API** (free tier works).
+Works with **Gemini, Claude, OpenAI, Mistral, and Ollama**. Pick the provider and model that fits your setup.
 
 ---
 
@@ -30,7 +30,7 @@ Four one-click tone pills let you reshape your writing without prompting:
 Translate the field's content into any supported language in one click — right from the panel, without leaving the page.
 
 ### Disabled domains
-Add domains to a blocklist in the popup so the extension never activates on sites where you don't want it.
+Add domains to a blocklist in the popup so the extension never activates on sites where you don't want it. Domains are saved immediately — no Save click needed.
 
 ---
 
@@ -48,7 +48,7 @@ Add domains to a blocklist in the popup so the extension never activates on site
 
 3. Open `chrome://extensions`, enable **Developer mode**, click **Load unpacked**, and point it at the `dist/` folder.
 
-4. Open the extension popup and paste your **Gemini API key** (get one free at [aistudio.google.com](https://aistudio.google.com)).
+4. Open the extension popup, choose your **provider**, and enter your API key (or configure the Ollama URL).
 
 ### Development mode (watch)
 ```bash
@@ -57,9 +57,27 @@ npm run dev
 
 ---
 
+## Providers
+
+Choose any provider in the popup. Each one requires its own API key or local setup.
+
+| Provider | Where to get a key | Notes |
+|----------|--------------------|-------|
+| **Gemini** | [aistudio.google.com](https://aistudio.google.com) | Free tier available |
+| **Claude** | [console.anthropic.com](https://console.anthropic.com) | Requires billing. Enable "Allow direct browser access" in your org settings |
+| **ChatGPT (OpenAI)** | [platform.openai.com](https://platform.openai.com) | |
+| **Mistral** | [console.mistral.ai](https://console.mistral.ai) | |
+| **Ollama** | — | Run locally. Launch with `OLLAMA_ORIGINS=chrome-extension://* ollama serve` |
+
+Each provider exposes a **model dropdown** in the popup. Pick the model, save once, and you're done.
+
+---
+
 ## How it works
 
 All AI calls go through the **background service worker** (`src/background/`), never directly from the content script. This keeps API keys out of the page context and lets providers be swapped without touching the UI.
+
+The config is stored as a single namespaced object in `chrome.storage.local` — API keys never leave your browser except in the requests you make to the chosen provider.
 
 ### Provider architecture
 
@@ -78,21 +96,17 @@ The active provider is resolved at request time in `provider-factory.ts` based o
 1. Create `src/background/providers/my-provider.ts` implementing `AIProvider`
 2. Register it in `provider-factory.ts`
 3. Add its `id` to the `ProviderId` union in `src/shared/types.ts`
-4. Add a UI entry in the popup's `ApiKeySection`
+4. Add its models to `PROVIDER_MODELS` in `src/shared/models.ts`
 
 ### Current providers
 
-| Provider | Model | Notes |
-|----------|-------|-------|
-| **Gemini** | `gemini-2.5-flash-lite` | Default. Free tier available at [aistudio.google.com](https://aistudio.google.com) |
-
-### Adding your Gemini API key
-
-1. Go to [aistudio.google.com](https://aistudio.google.com) → **Get API key**
-2. Click the extension icon in the Chrome toolbar
-3. Paste the key in the **API Key** field and save
-
-The key is stored in `chrome.storage.local` — it never leaves your browser except in the requests you make to Gemini.
+| Provider | Default model |
+|----------|--------------|
+| **Gemini** | `gemini-2.5-flash-lite` |
+| **Claude** | `claude-haiku-4-5-20251001` |
+| **OpenAI** | `gpt-4o-mini` |
+| **Mistral** | `mistral-small-latest` |
+| **Ollama** | user-selected from running instance |
 
 ---
 
@@ -103,7 +117,6 @@ The key is stored in `chrome.storage.local` — it never leaves your browser exc
 - **Vite** + `vite-plugin-web-extension` — MV3 build pipeline
 - **Vitest** + Testing Library — unit and component tests
 - **Motion** — panel animations
-- **Gemini API** — grammar, rewrite, and translation inference
 
 ---
 
@@ -111,15 +124,15 @@ The key is stored in `chrome.storage.local` — it never leaves your browser exc
 
 ```
 src/
-  background/         # Service worker — handles Gemini API calls
-    providers/        # AIProvider interface + Gemini implementation
+  background/         # Service worker — handles all AI API calls
+    providers/        # AIProvider interface + Gemini, Claude, OpenAI, Mistral, Ollama
   content/            # Content script injected into every tab
     components/       # React UI (GrammarPanel, TriggerButton, ShadowPortal…)
     hooks/            # useFieldDetector, usePanelOrchestration, usePanelState…
     utils/            # Grammar checker, AI rewrite, text apply, field detector
   popup/              # Extension popup (settings)
-    components/       # ApiKeySection, LanguageSection, DisabledSitesSection…
-  shared/             # Types, constants, storage, config defaults
+    components/       # ProviderSection, LanguageSection, DisabledSitesSection…
+  shared/             # Types, constants, storage, config defaults, provider models
 ```
 
 ---
@@ -131,7 +144,6 @@ The core AI pipeline (grammar / rewrite / translate) is intentionally decoupled 
 - **Firefox** — MV3 support arrived in Firefox 109; a Firefox build should require only manifest adjustments and a few Web Extension API polyfills.
 - **Slack app** — expose the AI pipeline as a Bolt app. Grammar check and rewrite could run on message compose via a slash command or a message action, using the same prompt layer.
 - **Web app / bookmarklet** — a standalone page that accepts pasted text and runs the full pipeline, no install required.
-- **Additional providers** — the `AIProvider` interface in `src/background/providers/types.ts` is designed to be extended. OpenAI, Claude, and Mistral could be added as drop-in providers.
 - **More languages** — the language list in `src/shared/languages.ts` is a short array; adding entries is the only change needed on the frontend side.
 - **Custom tone presets** — let users define their own tone instructions in the popup.
 
