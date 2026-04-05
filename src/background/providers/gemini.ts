@@ -1,23 +1,31 @@
 import type { GrammarError, TonePreset } from '../../shared/types'
 import type { AIProvider, GeminiApiResponse } from './types'
 import { buildGrammarPrompt, buildRewritePrompt, buildToneRewritePrompt, buildTranslatePrompt, parseGrammarErrors } from './prompts'
+import { REQUEST_TIMEOUT_MS } from '../../shared/constants'
 
-const BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent'
+const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
+const FETCH_TIMEOUT_MS = REQUEST_TIMEOUT_MS - 1_000 // cancel fetch before content script times out
 
-async function callGemini(prompt: string, apiKey: string): Promise<string> {
+async function callGemini(prompt: string, apiKey: string, model: string): Promise<string> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
+
   let response: Response
   try {
-    response = await fetch(`${BASE_URL}?key=${apiKey}`, {
+    response = await fetch(`${GEMINI_BASE}/${model}:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { thinkingConfig: { thinkingBudget: 0 } },
       }),
+      signal: controller.signal,
     })
   } catch {
+    clearTimeout(timer)
     throw new Error('AI service unreachable')
   }
+  clearTimeout(timer)
 
   if (!response.ok) {
     console.error(`[Gemini] ${response.status}`)
@@ -34,10 +42,13 @@ async function callGemini(prompt: string, apiKey: string): Promise<string> {
 }
 
 export class GeminiProvider implements AIProvider {
-  constructor(private readonly apiKey: string) {}
+  constructor(
+    private readonly apiKey: string,
+    private readonly model: string = 'gemini-2.5-flash-lite'
+  ) {}
 
   async checkGrammar(text: string, language: string): Promise<GrammarError[]> {
-    const raw = await callGemini(buildGrammarPrompt(text, language), this.apiKey)
+    const raw = await callGemini(buildGrammarPrompt(text, language), this.apiKey, this.model)
     return parseGrammarErrors(raw)
   }
 
@@ -45,10 +56,10 @@ export class GeminiProvider implements AIProvider {
     const prompt = tone
       ? buildToneRewritePrompt(text, tone, language, selection)
       : buildRewritePrompt(text, selection, language)
-    return callGemini(prompt, this.apiKey)
+    return callGemini(prompt, this.apiKey, this.model)
   }
 
   async translate(text: string, targetLanguage: string): Promise<string> {
-    return callGemini(buildTranslatePrompt(text, targetLanguage), this.apiKey)
+    return callGemini(buildTranslatePrompt(text, targetLanguage), this.apiKey, this.model)
   }
 }

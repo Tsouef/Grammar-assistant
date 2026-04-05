@@ -5,6 +5,7 @@
   "description": "On-demand grammar checking and AI rewriting for any web text field",
   "permissions": ["storage"],
   "host_permissions": ["<all_urls>"],
+  "options_page": "src/popup/index.html",
   "background": {
     "service_worker": "src/background/index.ts",
     "type": "module"

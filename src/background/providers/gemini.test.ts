@@ -70,6 +70,41 @@ describe('GeminiProvider.checkGrammar', () => {
     const provider = new GeminiProvider('key')
     expect(await provider.checkGrammar('Correct text', 'auto')).toEqual([])
   })
+
+  it('uses custom model in request URL', async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(
+        JSON.stringify({ candidates: [{ content: { parts: [{ text: '[]' }] } }] }),
+        { status: 200 }
+      )
+    )
+    const provider = new GeminiProvider('key', 'gemini-2.5-pro')
+    await provider.checkGrammar('text', 'auto')
+    const calledUrl = vi.mocked(fetch).mock.calls[0][0] as string
+    expect(calledUrl).toContain('gemini-2.5-pro')
+  })
+
+  it('aborts fetch after timeout and throws', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal('fetch', (_url: string, opts?: RequestInit) =>
+      new Promise((_resolve, reject) => {
+        opts?.signal?.addEventListener('abort', () => {
+          reject(new DOMException('The operation was aborted.', 'AbortError'))
+        })
+      })
+    )
+
+    const provider = new GeminiProvider('valid-key')
+    const resultPromise = provider.checkGrammar('hello', 'en-US').catch((e: Error) => e)
+
+    // Advance past the 19 s abort timeout and flush microtasks
+    await vi.advanceTimersByTimeAsync(19_001)
+
+    const result = await resultPromise
+    expect(result).toBeInstanceOf(Error)
+    expect((result as Error).message).toBe('AI service unreachable')
+    vi.useRealTimers()
+  })
 })
 
 describe('GeminiProvider.rewrite', () => {

@@ -5,9 +5,10 @@ import { Spinner } from '../Spinner/Spinner'
 interface PanelHeaderProps {
   state: PanelState
   onRequestAI: (tone?: TonePreset) => void
+  onOpenSettings?: () => void
 }
 
-export function PanelHeader({ state, onRequestAI }: PanelHeaderProps) {
+export function PanelHeader({ state, onRequestAI, onOpenSettings }: PanelHeaderProps) {
   function renderStatus() {
     if (state.type === 'checking') {
       return (
@@ -19,18 +20,23 @@ export function PanelHeader({ state, onRequestAI }: PanelHeaderProps) {
     }
 
     if (state.type === 'error') {
-      const msg =
-        state.message === 'NO_PROVIDER_CONFIGURED'
-          ? 'Configure a provider in settings'
-          : state.message.includes('Invalid API key')
-          ? state.message
-          : state.message.includes('unreachable')
-          ? 'AI service unreachable'
-          : state.message
+      const isNoProvider = state.message === 'NO_PROVIDER_CONFIGURED'
+      const msg = isNoProvider
+        ? 'Configure a provider in settings'
+        : state.message.includes('Invalid API key')
+        ? state.message
+        : state.message.includes('unreachable')
+        ? 'AI service unreachable'
+        : state.message
       return (
         <span className="status">
           <span className="status-icon error">⚠</span>
           {msg}
+          {isNoProvider && onOpenSettings && (
+            <button className="btn-open-settings" onClick={onOpenSettings}>
+              Open settings
+            </button>
+          )}
         </span>
       )
     }

@@ -1,6 +1,6 @@
 import type React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GrammarPanel } from './GrammarPanel'
 import type { TonePreset } from '../../../shared/types'
@@ -37,6 +37,7 @@ interface MakeProps {
   onRequestTranslate?: (targetLang: string) => void
   onClose?: () => void
   onDismiss?: () => void
+  onOpenSettings?: () => void
 }
 
 function renderPanel({ state, isOpen = true, ...overrides }: MakeProps) {
@@ -241,6 +242,79 @@ describe('GrammarPanel — translation', () => {
     const props = renderPanel({ state: { type: 'ai-result', rewritten: 'Fixed text', isSelection: false } })
     await userEvent.click(screen.getByText('Dismiss'))
     expect(props.onDismiss).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('GrammarPanel — open settings CTA', () => {
+  it('renders "Open settings" button when NO_PROVIDER_CONFIGURED error', () => {
+    const onOpenSettings = vi.fn()
+    renderPanel({
+      isOpen: true,
+      state: { type: 'error', message: 'NO_PROVIDER_CONFIGURED' },
+      onOpenSettings,
+    })
+    const btn = screen.getByRole('button', { name: /open settings/i })
+    expect(btn).toBeInTheDocument()
+    fireEvent.click(btn)
+    expect(onOpenSettings).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not render "Open settings" button for other error types', () => {
+    renderPanel({
+      isOpen: true,
+      state: { type: 'error', message: 'Invalid API key' },
+      onOpenSettings: vi.fn(),
+    })
+    expect(screen.queryByRole('button', { name: /open settings/i })).toBeNull()
+  })
+})
+
+describe('GrammarPanel — scroll repositioning', () => {
+  beforeEach(() => {
+    // jsdom does not implement ResizeObserver — stub it out
+    vi.stubGlobal('ResizeObserver', class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    })
+  })
+
+  it('calls reposition when window scroll event fires', async () => {
+    const { waitFor } = await import('@testing-library/react')
+
+    const field = document.createElement('div')
+    field.setAttribute('contenteditable', 'true')
+    document.body.appendChild(field)
+
+    const getBoundingClientRect = vi.fn(() => ({
+      top: 400, bottom: 450, left: 100, right: 400, width: 300, height: 50,
+      x: 100, y: 400, toJSON: () => ({}),
+    } as DOMRect))
+    Object.defineProperty(field, 'getBoundingClientRect', { value: getBoundingClientRect })
+
+    render(
+      <GrammarPanel
+        isOpen={true}
+        state={{ type: 'idle' }}
+        field={field}
+        onRequestAI={vi.fn()}
+        onApplyAI={vi.fn()}
+        onRequestTranslate={vi.fn()}
+        onClose={vi.fn()}
+        onDismiss={vi.fn()}
+      />
+    )
+
+    const initialCalls = getBoundingClientRect.mock.calls.length
+
+    // Dispatch scroll event
+    window.dispatchEvent(new Event('scroll'))
+
+    await waitFor(() => {
+      expect(getBoundingClientRect.mock.calls.length).toBeGreaterThan(initialCalls)
+    })
+
+    document.body.removeChild(field)
   })
 })
 

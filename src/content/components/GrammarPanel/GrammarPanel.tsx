@@ -26,6 +26,7 @@ interface GrammarPanelProps {
   onRequestTranslate: (targetLang: string) => void
   onClose: () => void
   onDismiss: () => void
+  onOpenSettings?: () => void
 }
 
 interface ErrorSectionProps {
@@ -54,7 +55,7 @@ function ErrorSection({ fieldText, errors, onApplyAI, onClose }: ErrorSectionPro
 }
 
 export const GrammarPanel = memo(forwardRef<GrammarPanelHandle, GrammarPanelProps>(
-  ({ isOpen, state, field, onRequestAI, onApplyAI, onRequestTranslate, onClose, onDismiss }, ref) => {
+  ({ isOpen, state, field, onRequestAI, onApplyAI, onRequestTranslate, onClose, onDismiss, onOpenSettings }, ref) => {
     const shadowRef = useRef<ShadowPortalHandle>(null)
     const [hostStyle, setHostStyle] = useState<CSSProperties>({
       position: 'fixed',
@@ -106,9 +107,16 @@ export const GrammarPanel = memo(forwardRef<GrammarPanelHandle, GrammarPanelProp
 
       reposition()
       if (!field) return
-      const observer = new ResizeObserver(reposition)
-      observer.observe(field)
-      return () => observer.disconnect()
+
+      const resizeObserver = new ResizeObserver(reposition)
+      resizeObserver.observe(field)
+
+      window.addEventListener('scroll', reposition, { passive: true })
+
+      return () => {
+        resizeObserver.disconnect()
+        window.removeEventListener('scroll', reposition)
+      }
     }, [field, isOpen])
 
     return (
@@ -125,6 +133,7 @@ export const GrammarPanel = memo(forwardRef<GrammarPanelHandle, GrammarPanelProp
               <PanelHeader
                 state={state}
                 onRequestAI={onRequestAI}
+                onOpenSettings={onOpenSettings}
               />
 
               {state.type === 'results' && (

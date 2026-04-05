@@ -1,8 +1,10 @@
-export type ProviderId = 'gemini'
+export type ProviderId = 'gemini' | 'claude' | 'openai' | 'ollama' | 'mistral'
 
 export interface ProviderConfig {
   id: ProviderId
-  apiKey: string
+  apiKey?: string    // absent for Ollama
+  baseUrl?: string   // Ollama only — default: http://localhost:11434
+  model?: string     // selected model; undefined = first in provider's list
 }
 
 export interface Config {
@@ -41,7 +43,16 @@ export interface TranslateMessage {
   targetLanguage: string
 }
 
-export type BackgroundMessage = CheckGrammarMessage | AIRewriteMessage | TranslateMessage
+export interface GetOllamaModelsMessage {
+  type: 'GET_OLLAMA_MODELS'
+  baseUrl: string
+}
+
+export interface GetOllamaModelsResponse {
+  models: string[]
+}
+
+export type BackgroundMessage = CheckGrammarMessage | AIRewriteMessage | TranslateMessage | GetOllamaModelsMessage
 
 export interface CheckGrammarResponse {
   errors: GrammarError[]
@@ -59,4 +70,4 @@ export interface ErrorResponse {
   error: string
 }
 
-export type BackgroundResponse = CheckGrammarResponse | AIRewriteResponse | TranslateResponse | ErrorResponse
+export type BackgroundResponse = CheckGrammarResponse | AIRewriteResponse | TranslateResponse | GetOllamaModelsResponse | ErrorResponse

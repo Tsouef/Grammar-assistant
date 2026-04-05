@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { useConfig } from './hooks/useConfig'
-import type { Config } from '../shared/types'
+import type { Config, ProviderId } from '../shared/types'
 import { EASE_OUT, SAVED_VISIBLE_DURATION_MS } from '../shared/constants'
+import { PROVIDER_IDS } from '../shared/models'
 import styles from './App.module.css'
-import { ApiKeySection } from './components/ApiKeySection/ApiKeySection'
+import { ProviderSection } from './components/ProviderSection/ProviderSection'
+import type { PerProviderState } from './components/ProviderSection/ProviderSection'
 import { LanguageSection } from './components/LanguageSection/LanguageSection'
 import { DisabledSitesSection } from './components/DisabledSitesSection/DisabledSitesSection'
 import { SaveButton } from './components/SaveButton/SaveButton'
@@ -17,11 +19,7 @@ const sectionVariants = {
 
 const containerVariants = {
   hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.06,
-    },
-  },
+  visible: { transition: { staggerChildren: 0.06 } },
 }
 
 export default function App() {
@@ -35,33 +33,97 @@ interface AppFormProps {
   saveConfig: (c: Config) => Promise<void>
 }
 
+function initialPerProviderState(config: Config): Record<ProviderId, PerProviderState> {
+  const result = {} as Record<ProviderId, PerProviderState>
+  for (const id of PROVIDER_IDS) {
+    const stored = config.providers.find((p) => p.id === id)
+    result[id] = {
+      apiKey: stored?.apiKey ?? '',
+      model: stored?.model ?? '',
+      baseUrl: stored?.baseUrl ?? (id === 'ollama' ? 'http://localhost:11434' : ''),
+    }
+  }
+  return result
+}
+
 function AppForm({ config, saveConfig }: AppFormProps) {
-  const geminiProvider = config.providers.find((p) => p.id === 'gemini')
-  const [apiKey, setApiKey] = useState(geminiProvider?.apiKey ?? '')
+  const [activeProvider, setActiveProvider] = useState<ProviderId>(config.activeProvider)
+  const [providerStates, setProviderStates] = useState<Record<ProviderId, PerProviderState>>(
+    () => initialPerProviderState(config)
+  )
   const [language, setLanguage] = useState<Config['language']>(config.language)
   const [domains, setDomains] = useState([...config.disabledDomains])
-  const [keyVisible, setKeyVisible] = useState(false)
-  const [keyError, setKeyError] = useState(false)
+  const [errors, setErrors] = useState<{ apiKey?: boolean; baseUrl?: boolean; model?: boolean }>({})
   const [savedVisible, setSavedVisible] = useState(false)
+  const [ollamaModels, setOllamaModels] = useState<string[]>([])
+  const [ollamaModelsStatus, setOllamaModelsStatus] = useState<'idle' | 'loading' | 'error'>('idle')
+
+  const fetchOllamaModels = useCallback((baseUrl: string) => {
+    if (!baseUrl) return
+    setOllamaModelsStatus('loading')
+    chrome.runtime.sendMessage({ type: 'GET_OLLAMA_MODELS', baseUrl })
+      .then((response: { models: string[] }) => {
+        setOllamaModels(response.models)
+        setOllamaModelsStatus('idle')
+      })
+      .catch(() => setOllamaModelsStatus('error'))
+  }, [])
+
+  useEffect(() => {
+    if (activeProvider === 'ollama') {
+      fetchOllamaModels(providerStates.ollama.baseUrl)
+    }
+  }, [activeProvider]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function handleProviderChange(id: ProviderId) {
+    setActiveProvider(id)
+    setErrors({})
+  }
+
+  function handleStateChange(id: ProviderId, patch: Partial<PerProviderState>) {
+    setProviderStates((prev) => ({ ...prev, [id]: { ...prev[id], ...patch } }))
+    if (id === 'ollama' && patch.baseUrl !== undefined) {
+      fetchOllamaModels(patch.baseUrl)
+    }
+  }
 
   function handleAddDomain(domain: string) {
-    setDomains((prev) => [...prev, domain])
+    const newDomains = [...domains, domain]
+    setDomains(newDomains)
+    saveConfig({ ...config, disabledDomains: newDomains })
   }
 
   function handleRemoveDomain(domain: string) {
-    setDomains((prev) => prev.filter((d) => d !== domain))
+    const newDomains = domains.filter((d) => d !== domain)
+    setDomains(newDomains)
+    saveConfig({ ...config, disabledDomains: newDomains })
   }
 
   async function handleSave() {
-    if (!apiKey.trim()) {
-      setKeyError(true)
+    const state = providerStates[activeProvider]
+    if (activeProvider !== 'ollama' && !state.apiKey.trim()) {
+      setErrors({ apiKey: true })
       return
     }
-    setKeyError(false)
+    if (activeProvider === 'ollama' && !state.baseUrl.trim()) {
+      setErrors({ baseUrl: true })
+      return
+    }
+    if (activeProvider === 'ollama' && !state.model.trim()) {
+      setErrors({ model: true })
+      return
+    }
+    setErrors({})
+
+    const providers = PROVIDER_IDS.map((id) => {
+      const s = providerStates[id]
+      if (id === 'ollama') return { id, baseUrl: s.baseUrl, model: s.model }
+      return { id, apiKey: s.apiKey.trim(), model: s.model }
+    })
 
     const newConfig: Config = {
-      activeProvider: 'gemini',
-      providers: [{ id: 'gemini', apiKey: apiKey.trim() }],
+      activeProvider,
+      providers,
       language,
       disabledDomains: domains,
     }
@@ -77,43 +139,29 @@ function AppForm({ config, saveConfig }: AppFormProps) {
         <span className={styles.logoIcon}>✦</span>
         Grammar Assistant
       </h1>
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.div
-          variants={sectionVariants}
-          transition={{ duration: 0.3, ease: EASE_OUT }}
-        >
-          <ApiKeySection
-            value={apiKey}
-            onChange={setApiKey}
-            visible={keyVisible}
-            onToggleVisible={() => setKeyVisible((v) => !v)}
-            error={keyError}
+      <motion.div variants={containerVariants} initial="hidden" animate="visible">
+        <motion.div variants={sectionVariants} transition={{ duration: 0.3, ease: EASE_OUT }}>
+          <ProviderSection
+            activeProvider={activeProvider}
+            providerStates={providerStates}
+            onProviderChange={handleProviderChange}
+            onStateChange={handleStateChange}
+            errors={errors}
+            ollamaModels={ollamaModels}
+            ollamaModelsStatus={ollamaModelsStatus}
           />
         </motion.div>
-        <motion.div
-          variants={sectionVariants}
-          transition={{ duration: 0.3, ease: EASE_OUT }}
-        >
+        <motion.div variants={sectionVariants} transition={{ duration: 0.3, ease: EASE_OUT }}>
           <LanguageSection value={language} onChange={setLanguage} />
         </motion.div>
-        <motion.div
-          variants={sectionVariants}
-          transition={{ duration: 0.3, ease: EASE_OUT }}
-        >
+        <motion.div variants={sectionVariants} transition={{ duration: 0.3, ease: EASE_OUT }}>
           <DisabledSitesSection
             domains={domains}
             onAdd={handleAddDomain}
             onRemove={handleRemoveDomain}
           />
         </motion.div>
-        <motion.div
-          variants={sectionVariants}
-          transition={{ duration: 0.3, ease: EASE_OUT }}
-        >
+        <motion.div variants={sectionVariants} transition={{ duration: 0.3, ease: EASE_OUT }}>
           <SaveButton onClick={handleSave} />
           <SavedMessage visible={savedVisible} />
         </motion.div>
@@ -121,4 +169,3 @@ function AppForm({ config, saveConfig }: AppFormProps) {
     </>
   )
 }
-

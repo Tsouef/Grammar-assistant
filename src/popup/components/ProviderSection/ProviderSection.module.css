@@ -1,0 +1,26 @@
+/* ─── ProviderSection ────────────────────────────────────────────────────── */
+
+.field {
+  margin-top: 10px;
+}
+
+.inputRow {
+  display: flex;
+  gap: 7px;
+}
+
+.inputRow input {
+  flex: 1;
+}
+
+.errorMsg {
+  font-size: 11px;
+  color: var(--danger);
+  margin-top: 5px;
+}
+
+.statusMsg {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 5px;
+}

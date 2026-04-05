@@ -19,7 +19,7 @@ export function useConfig() {
   }, [])
 
   async function saveConfig(newConfig: Config): Promise<void> {
-    await chrome.storage.local.set({ ...newConfig })
+    await chrome.storage.local.set({ config: newConfig })
   }
 
   return { config, saveConfig }

@@ -1,4 +1,5 @@
 import { getActiveProvider } from './provider-factory'
+import { fetchOllamaModels } from './providers/ollama'
 import { getConfig } from '../shared/storage'
 import type { BackgroundMessage, BackgroundResponse } from '../shared/types'
 
@@ -13,6 +14,15 @@ chrome.runtime.onMessage.addListener(
 )
 
 async function handleMessage(message: BackgroundMessage): Promise<BackgroundResponse> {
+  if (message.type === 'GET_OLLAMA_MODELS') {
+    try {
+      const models = await fetchOllamaModels(message.baseUrl)
+      return { models }
+    } catch {
+      return { models: [] }
+    }
+  }
+
   const config = await getConfig()
   const provider = getActiveProvider(config)
 

@@ -26,6 +26,8 @@ export function ContentApp({ config: initialConfig }: ContentAppProps) {
     dismiss,
   } = usePanelOrchestration(config)
 
+  if (config.disabledDomains.includes(window.location.hostname)) return null
+
   return (
     <>
       <AnimatePresence>
@@ -48,6 +50,7 @@ export function ContentApp({ config: initialConfig }: ContentAppProps) {
         onRequestTranslate={handleRequestTranslate}
         onClose={closePanel}
         onDismiss={dismiss}
+        onOpenSettings={() => chrome.runtime.openOptionsPage()}
       />
     </>
   )
