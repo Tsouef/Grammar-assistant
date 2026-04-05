@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import styles from './SavedMessage.module.css'
 
 interface SavedMessageProps {
@@ -6,6 +7,7 @@ interface SavedMessageProps {
 }
 
 export function SavedMessage({ visible }: SavedMessageProps) {
+  const { t } = useTranslation()
   return (
     <AnimatePresence>
       {visible && (
@@ -16,7 +18,7 @@ export function SavedMessage({ visible }: SavedMessageProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          Saved
+          {t('popup.saved')}
         </motion.p>
       )}
     </AnimatePresence>

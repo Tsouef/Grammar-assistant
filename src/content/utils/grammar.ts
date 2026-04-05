@@ -1,9 +1,10 @@
-import type { GrammarError, CheckGrammarMessage, CheckGrammarResponse } from '../../shared/types'
+import type { GrammarError, CheckGrammarMessage, CheckGrammarResponse, UiLocale } from '../../shared/types'
 import { RATE_LIMIT_BACKOFF_MS, MAX_GRAMMAR_TEXT_LENGTH, toErrorMessage } from '../../shared/constants'
 import { sendBackgroundMessage } from './messaging'
 
 export function createGrammarChecker(
   language: string,
+  uiLanguage: UiLocale,
   onResults: (errors: GrammarError[], text: string) => void,
   onError: (error: string) => void,
   delay = 600
@@ -30,7 +31,7 @@ export function createGrammarChecker(
         return
       }
 
-      const message: CheckGrammarMessage = { type: 'CHECK_GRAMMAR', text, language }
+      const message: CheckGrammarMessage = { type: 'CHECK_GRAMMAR', text, language, uiLanguage }
 
       sendBackgroundMessage<CheckGrammarResponse>(message)
         .then((response) => onResults(response.errors, text))

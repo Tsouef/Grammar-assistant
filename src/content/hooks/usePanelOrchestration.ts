@@ -32,6 +32,7 @@ export function usePanelOrchestration(config: Config) {
 
   const grammarCheck = useGrammarCheck({
     language: config.language,
+    uiLanguage: config.uiLanguage,
     onResults: panelState.setResults,
     onError: panelState.setError,
   })

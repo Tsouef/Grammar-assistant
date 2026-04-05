@@ -1,0 +1,56 @@
+{
+  "popup": {
+    "heading": "Grammar Assistant",
+    "provider": "Provider",
+    "apiKeyRequired": "API key required",
+    "baseUrl": "Base URL",
+    "baseUrlRequired": "Base URL required",
+    "model": "Model",
+    "modelRequired": "Model required",
+    "selectModel": "— select a model —",
+    "loadingModels": "Loading models…",
+    "ollamaUnreachable": "Ollama unreachable — is the server running?",
+    "textLanguage": "Text language",
+    "uiLanguage": "Interface language",
+    "autoDetect": "Auto-detect",
+    "disabledSites": "Disabled Sites",
+    "addBtn": "+ Add",
+    "save": "Save settings",
+    "saved": "Saved",
+    "showHide": "Show/hide"
+  },
+  "panel": {
+    "checking": "Checking…",
+    "translating": "Translating…",
+    "rewriting": "Rewriting…",
+    "translation": "Translation",
+    "aiSuggestion": "AI suggestion",
+    "looksGood": "Looks good",
+    "issueCount_one": "{{count}} issue",
+    "issueCount_other": "{{count}} issues",
+    "improve": "✦ Improve",
+    "fixAll": "Fix all",
+    "useThisVersion": "Use this version",
+    "accept": "Accept",
+    "dismiss": "Dismiss",
+    "translateTo": "Translate to",
+    "go": "Go",
+    "configureProvider": "Configure a provider in settings",
+    "openSettings": "Open settings"
+  },
+  "tone": {
+    "shorter": "Shorter",
+    "formal": "Formal",
+    "direct": "Direct",
+    "technical": "Technical"
+  },
+  "error": {
+    "serviceUnreachable": "AI service unreachable",
+    "extensionError": "Extension error",
+    "extensionInvalidated": "Extension updated — please refresh the page",
+    "requestTimedOut": "Request timed out",
+    "rateLimited": "Rate limit — please wait a moment",
+    "textTooLong": "Text too long — checking first {{max}} characters",
+    "nothingToRewrite": "Nothing to rewrite"
+  }
+}

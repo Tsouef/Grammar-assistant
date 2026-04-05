@@ -1,0 +1,56 @@
+{
+  "popup": {
+    "heading": "Grammar Assistant",
+    "provider": "Anbieter",
+    "apiKeyRequired": "API-Schlüssel erforderlich",
+    "baseUrl": "Basis-URL",
+    "baseUrlRequired": "Basis-URL erforderlich",
+    "model": "Modell",
+    "modelRequired": "Modell erforderlich",
+    "selectModel": "— Modell auswählen —",
+    "loadingModels": "Modelle laden…",
+    "ollamaUnreachable": "Ollama nicht erreichbar — läuft der Server?",
+    "textLanguage": "Textsprache",
+    "uiLanguage": "Oberflächensprache",
+    "autoDetect": "Automatisch erkennen",
+    "disabledSites": "Deaktivierte Websites",
+    "addBtn": "+ Hinzufügen",
+    "save": "Einstellungen speichern",
+    "saved": "Gespeichert",
+    "showHide": "Anzeigen/verbergen"
+  },
+  "panel": {
+    "checking": "Prüfen…",
+    "translating": "Übersetzen…",
+    "rewriting": "Umschreiben…",
+    "translation": "Übersetzung",
+    "aiSuggestion": "KI-Vorschlag",
+    "looksGood": "Alles in Ordnung",
+    "issueCount_one": "{{count}} Fehler",
+    "issueCount_other": "{{count}} Fehler",
+    "improve": "✦ Verbessern",
+    "fixAll": "Alle korrigieren",
+    "useThisVersion": "Diese Version verwenden",
+    "accept": "Annehmen",
+    "dismiss": "Verwerfen",
+    "translateTo": "Übersetzen nach",
+    "go": "Los",
+    "configureProvider": "Einen Anbieter in den Einstellungen konfigurieren",
+    "openSettings": "Einstellungen öffnen"
+  },
+  "tone": {
+    "shorter": "Kürzer",
+    "formal": "Formal",
+    "direct": "Direkt",
+    "technical": "Technisch"
+  },
+  "error": {
+    "serviceUnreachable": "KI-Dienst nicht erreichbar",
+    "extensionError": "Erweiterungsfehler",
+    "extensionInvalidated": "Erweiterung aktualisiert — bitte Seite neu laden",
+    "requestTimedOut": "Zeitüberschreitung",
+    "rateLimited": "Limit erreicht — bitte warten",
+    "textTooLong": "Text zu lang — nur die ersten {{max}} Zeichen werden geprüft",
+    "nothingToRewrite": "Nichts zum Umschreiben"
+  }
+}

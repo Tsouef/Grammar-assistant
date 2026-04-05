@@ -1,0 +1,56 @@
+{
+  "popup": {
+    "heading": "Grammar Assistant",
+    "provider": "Aanbieder",
+    "apiKeyRequired": "API-sleutel vereist",
+    "baseUrl": "Basis-URL",
+    "baseUrlRequired": "Basis-URL vereist",
+    "model": "Model",
+    "modelRequired": "Model vereist",
+    "selectModel": "— selecteer een model —",
+    "loadingModels": "Modellen laden…",
+    "ollamaUnreachable": "Ollama niet bereikbaar — draait de server?",
+    "textLanguage": "Teksttaal",
+    "uiLanguage": "Interfacetaal",
+    "autoDetect": "Automatisch detecteren",
+    "disabledSites": "Uitgeschakelde sites",
+    "addBtn": "+ Toevoegen",
+    "save": "Instellingen opslaan",
+    "saved": "Opgeslagen",
+    "showHide": "Tonen/verbergen"
+  },
+  "panel": {
+    "checking": "Controleren…",
+    "translating": "Vertalen…",
+    "rewriting": "Herschrijven…",
+    "translation": "Vertaling",
+    "aiSuggestion": "AI-suggestie",
+    "looksGood": "Geen fouten",
+    "issueCount_one": "{{count}} fout",
+    "issueCount_other": "{{count}} fouten",
+    "improve": "✦ Verbeteren",
+    "fixAll": "Alles corrigeren",
+    "useThisVersion": "Deze versie gebruiken",
+    "accept": "Accepteren",
+    "dismiss": "Sluiten",
+    "translateTo": "Vertalen naar",
+    "go": "Ga",
+    "configureProvider": "Configureer een aanbieder in de instellingen",
+    "openSettings": "Instellingen openen"
+  },
+  "tone": {
+    "shorter": "Korter",
+    "formal": "Formeel",
+    "direct": "Direct",
+    "technical": "Technisch"
+  },
+  "error": {
+    "serviceUnreachable": "AI-dienst niet bereikbaar",
+    "extensionError": "Extensiefout",
+    "extensionInvalidated": "Extensie bijgewerkt — ververs de pagina",
+    "requestTimedOut": "Time-out",
+    "rateLimited": "Limiet bereikt — wacht even",
+    "textTooLong": "Tekst te lang — alleen de eerste {{max}} tekens worden gecontroleerd",
+    "nothingToRewrite": "Niets om te herschrijven"
+  }
+}

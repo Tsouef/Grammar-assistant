@@ -1,0 +1,56 @@
+{
+  "popup": {
+    "heading": "Grammar Assistant",
+    "provider": "Proveedor",
+    "apiKeyRequired": "Se requiere clave API",
+    "baseUrl": "URL base",
+    "baseUrlRequired": "Se requiere URL base",
+    "model": "Modelo",
+    "modelRequired": "Se requiere modelo",
+    "selectModel": "— seleccionar un modelo —",
+    "loadingModels": "Cargando modelos…",
+    "ollamaUnreachable": "Ollama no disponible — ¿está el servidor en ejecución?",
+    "textLanguage": "Idioma del texto",
+    "uiLanguage": "Idioma de la interfaz",
+    "autoDetect": "Detección automática",
+    "disabledSites": "Sitios desactivados",
+    "addBtn": "+ Añadir",
+    "save": "Guardar ajustes",
+    "saved": "Guardado",
+    "showHide": "Mostrar/ocultar"
+  },
+  "panel": {
+    "checking": "Comprobando…",
+    "translating": "Traduciendo…",
+    "rewriting": "Reescribiendo…",
+    "translation": "Traducción",
+    "aiSuggestion": "Sugerencia de IA",
+    "looksGood": "Sin errores",
+    "issueCount_one": "{{count}} error",
+    "issueCount_other": "{{count}} errores",
+    "improve": "✦ Mejorar",
+    "fixAll": "Corregir todo",
+    "useThisVersion": "Usar esta versión",
+    "accept": "Aceptar",
+    "dismiss": "Descartar",
+    "translateTo": "Traducir a",
+    "go": "Ir",
+    "configureProvider": "Configurar un proveedor en los ajustes",
+    "openSettings": "Abrir ajustes"
+  },
+  "tone": {
+    "shorter": "Más corto",
+    "formal": "Formal",
+    "direct": "Directo",
+    "technical": "Técnico"
+  },
+  "error": {
+    "serviceUnreachable": "Servicio de IA no disponible",
+    "extensionError": "Error de extensión",
+    "extensionInvalidated": "Extensión actualizada — por favor recarga la página",
+    "requestTimedOut": "Tiempo de espera agotado",
+    "rateLimited": "Límite alcanzado — por favor espera",
+    "textTooLong": "Texto demasiado largo — comprobando los primeros {{max}} caracteres",
+    "nothingToRewrite": "Nada que reescribir"
+  }
+}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { TonePreset } from '../../../../shared/types'
 import { PanelState } from '../../../hooks/usePanelState'
 import { Spinner } from '../Spinner/Spinner'
@@ -9,12 +10,14 @@ interface PanelHeaderProps {
 }
 
 export function PanelHeader({ state, onRequestAI, onOpenSettings }: PanelHeaderProps) {
+  const { t } = useTranslation()
+
   function renderStatus() {
     if (state.type === 'checking') {
       return (
         <span className="status">
           <Spinner />
-          Checking&hellip;
+          {t('panel.checking')}
         </span>
       )
     }
@@ -22,11 +25,15 @@ export function PanelHeader({ state, onRequestAI, onOpenSettings }: PanelHeaderP
     if (state.type === 'error') {
       const isNoProvider = state.message === 'NO_PROVIDER_CONFIGURED'
       const msg = isNoProvider
-        ? 'Configure a provider in settings'
+        ? t('panel.configureProvider')
         : state.message.includes('Invalid API key')
         ? state.message
         : state.message.includes('unreachable')
-        ? 'AI service unreachable'
+        ? t('error.serviceUnreachable')
+        : state.message.includes('timed out')
+        ? t('error.requestTimedOut')
+        : state.message.includes('Rate limit')
+        ? t('error.rateLimited')
         : state.message
       return (
         <span className="status">
@@ -34,7 +41,7 @@ export function PanelHeader({ state, onRequestAI, onOpenSettings }: PanelHeaderP
           {msg}
           {isNoProvider && onOpenSettings && (
             <button className="btn-open-settings" onClick={onOpenSettings}>
-              Open settings
+              {t('panel.openSettings')}
             </button>
           )}
         </span>
@@ -45,7 +52,7 @@ export function PanelHeader({ state, onRequestAI, onOpenSettings }: PanelHeaderP
       return (
         <span className="status">
           <Spinner />
-          Translating&hellip;
+          {t('panel.translating')}
         </span>
       )
     }
@@ -54,7 +61,7 @@ export function PanelHeader({ state, onRequestAI, onOpenSettings }: PanelHeaderP
       return (
         <span className="status">
           <Spinner />
-          Rewriting&hellip;
+          {t('panel.rewriting')}
         </span>
       )
     }
@@ -63,7 +70,7 @@ export function PanelHeader({ state, onRequestAI, onOpenSettings }: PanelHeaderP
       return (
         <span className="status">
           <span className="status-icon info">✦</span>
-          Translation
+          {t('panel.translation')}
         </span>
       )
     }
@@ -72,19 +79,19 @@ export function PanelHeader({ state, onRequestAI, onOpenSettings }: PanelHeaderP
       return (
         <span className="status">
           <span className="status-icon info">✦</span>
-          AI suggestion
+          {t('panel.aiSuggestion')}
         </span>
       )
     }
 
     if (state.type === 'results') {
       if (state.errors.length === 0) {
-        return <span className="status">✅ Looks good</span>
+        return <span className="status">✅ {t('panel.looksGood')}</span>
       }
       return (
         <span className="status">
           <span className="status-icon warning">●</span>
-          {` ${state.errors.length} issue${state.errors.length > 1 ? 's' : ''}`}
+          {` ${t('panel.issueCount', { count: state.errors.length })}`}
         </span>
       )
     }
@@ -99,7 +106,7 @@ export function PanelHeader({ state, onRequestAI, onOpenSettings }: PanelHeaderP
       {renderStatus()}
       {showImproveButton && (
         <button className="btn-improve" onClick={() => onRequestAI(undefined)}>
-          ✦ Improve
+          {t('panel.improve')}
         </button>
       )}
     </div>

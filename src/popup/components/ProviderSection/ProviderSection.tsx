@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import styles from './ProviderSection.module.css'
 import type { ProviderId } from '../../../shared/types'
 import { PROVIDER_MODELS, PROVIDER_LABELS, API_KEY_LABELS, PROVIDER_IDS } from '../../../shared/models'
@@ -29,13 +30,14 @@ export function ProviderSection({
   ollamaModels,
   ollamaModelsStatus,
 }: ProviderSectionProps) {
+  const { t } = useTranslation()
   const state = providerStates[activeProvider]
   const isOllama = activeProvider === 'ollama'
 
   return (
     <div className="section">
       {/* Provider selector */}
-      <label className="label" htmlFor="provider-select">Provider</label>
+      <label className="label" htmlFor="provider-select">{t('popup.provider')}</label>
       <select
         id="provider-select"
         value={activeProvider}
@@ -61,14 +63,14 @@ export function ProviderSection({
               onChange={(e) => onStateChange(activeProvider, { apiKey: e.target.value })}
             />
           </div>
-          {errors.apiKey && <p className={styles.errorMsg}>API key required</p>}
+          {errors.apiKey && <p className={styles.errorMsg}>{t('popup.apiKeyRequired')}</p>}
         </div>
       )}
 
       {/* Base URL — Ollama only */}
       {isOllama && (
         <div className={styles.field}>
-          <label className="label" htmlFor="base-url">Base URL</label>
+          <label className="label" htmlFor="base-url">{t('popup.baseUrl')}</label>
           <input
             type="text"
             id="base-url"
@@ -76,18 +78,18 @@ export function ProviderSection({
             value={state.baseUrl}
             onChange={(e) => onStateChange('ollama', { baseUrl: e.target.value })}
           />
-          {errors.baseUrl && <p className={styles.errorMsg}>Base URL required</p>}
+          {errors.baseUrl && <p className={styles.errorMsg}>{t('popup.baseUrlRequired')}</p>}
         </div>
       )}
 
       {/* Model selector */}
       <div className={styles.field}>
-        <label className="label" htmlFor="model-select">Model</label>
+        <label className="label" htmlFor="model-select">{t('popup.model')}</label>
         {isOllama ? (
           ollamaModelsStatus === 'loading' ? (
-            <p className={styles.statusMsg}>Loading models…</p>
+            <p className={styles.statusMsg}>{t('popup.loadingModels')}</p>
           ) : ollamaModelsStatus === 'error' ? (
-            <p className={styles.errorMsg}>Ollama unreachable — is the server running?</p>
+            <p className={styles.errorMsg}>{t('popup.ollamaUnreachable')}</p>
           ) : (
             <>
               <select
@@ -95,12 +97,12 @@ export function ProviderSection({
                 value={state.model}
                 onChange={(e) => onStateChange('ollama', { model: e.target.value })}
               >
-                {!state.model && <option value="">— select a model —</option>}
+                {!state.model && <option value="">{t('popup.selectModel')}</option>}
                 {ollamaModels.map((m) => (
                   <option key={m} value={m}>{m}</option>
                 ))}
               </select>
-              {errors.model && <p className={styles.errorMsg}>Model required</p>}
+              {errors.model && <p className={styles.errorMsg}>{t('popup.modelRequired')}</p>}
             </>
           )
         ) : (

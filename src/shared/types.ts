@@ -1,5 +1,7 @@
 export type ProviderId = 'gemini' | 'claude' | 'openai' | 'ollama' | 'mistral'
 
+export type UiLocale = 'en' | 'en-GB' | 'fr' | 'de' | 'es' | 'nl'
+
 export interface ProviderConfig {
   id: ProviderId
   apiKey?: string    // absent for Ollama
@@ -11,6 +13,7 @@ export interface Config {
   activeProvider: ProviderId
   providers: ProviderConfig[]
   language: 'auto' | 'en-US' | 'en-GB' | 'fr-FR' | 'de-DE' | 'es-ES' | 'nl-NL'
+  uiLanguage: UiLocale
   disabledDomains: string[]
 }
 
@@ -27,6 +30,7 @@ export interface CheckGrammarMessage {
   type: 'CHECK_GRAMMAR'
   text: string
   language: string
+  uiLanguage: UiLocale
 }
 
 export interface AIRewriteMessage {

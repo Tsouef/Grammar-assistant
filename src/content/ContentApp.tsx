@@ -1,9 +1,11 @@
+import { useEffect } from 'react'
 import { AnimatePresence } from 'motion/react'
 import { usePanelOrchestration } from './hooks/usePanelOrchestration'
 import { TriggerButton } from './components/TriggerButton/TriggerButton'
 import { GrammarPanel } from './components/GrammarPanel/GrammarPanel'
 import type { Config } from '../shared/types'
 import { useStorageConfig } from '../shared/useStorageConfig'
+import i18n from '../shared/i18n/i18n'
 
 interface ContentAppProps {
   config: Config
@@ -11,6 +13,10 @@ interface ContentAppProps {
 
 export function ContentApp({ config: initialConfig }: ContentAppProps) {
   const config = useStorageConfig(initialConfig)
+
+  useEffect(() => {
+    i18n.changeLanguage(config.uiLanguage)
+  }, [config.uiLanguage])
 
   const {
     panelRef,

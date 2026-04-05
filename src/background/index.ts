@@ -27,7 +27,7 @@ async function handleMessage(message: BackgroundMessage): Promise<BackgroundResp
   const provider = getActiveProvider(config)
 
   if (message.type === 'CHECK_GRAMMAR') {
-    const errors = await provider.checkGrammar(message.text, message.language)
+    const errors = await provider.checkGrammar(message.text, message.language, message.uiLanguage)
     return { errors }
   }
   if (message.type === 'AI_REWRITE') {

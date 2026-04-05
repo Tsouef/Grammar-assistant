@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import { getConfig } from '../shared/storage'
 import { DEFAULT_CONFIG } from '../shared/config-defaults'
+import '../shared/i18n/i18n'
 import { ContentApp } from './ContentApp'
 import { ErrorBoundary } from './components/ErrorBoundary'
 

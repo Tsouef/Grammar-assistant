@@ -1,4 +1,4 @@
-import type { GrammarError, TonePreset } from '../../shared/types'
+import type { GrammarError, TonePreset, UiLocale } from '../../shared/types'
 import type { AIProvider } from './types'
 import { buildGrammarPrompt, buildRewritePrompt, buildToneRewritePrompt, buildTranslatePrompt, parseGrammarErrors } from './prompts'
 import { REQUEST_TIMEOUT_MS } from '../../shared/constants'
@@ -48,8 +48,8 @@ export class OpenAIProvider implements AIProvider {
     private readonly model: string = 'gpt-4o-mini'
   ) {}
 
-  async checkGrammar(text: string, language: string): Promise<GrammarError[]> {
-    const raw = await callOpenAI(buildGrammarPrompt(text, language), this.apiKey, this.model)
+  async checkGrammar(text: string, language: string, uiLanguage: UiLocale): Promise<GrammarError[]> {
+    const raw = await callOpenAI(buildGrammarPrompt(text, language, uiLanguage), this.apiKey, this.model)
     return parseGrammarErrors(raw)
   }
 

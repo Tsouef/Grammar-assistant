@@ -10,6 +10,7 @@ export const DEFAULT_CONFIG: Config = {
     { id: 'ollama',  baseUrl: 'http://localhost:11434' },
   ],
   language: 'auto',
+  uiLanguage: 'en',
   disabledDomains: [],
 }
 

@@ -1,4 +1,5 @@
 import { type KeyboardEvent, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styles from './DisabledSitesSection.module.css'
 import { DomainTag } from '../DomainTag/DomainTag'
 
@@ -9,6 +10,7 @@ interface DisabledSitesSectionProps {
 }
 
 export function DisabledSitesSection({ domains, onAdd, onRemove }: DisabledSitesSectionProps) {
+  const { t } = useTranslation()
   const [inputValue, setInputValue] = useState('')
 
   function handleAdd() {
@@ -25,7 +27,7 @@ export function DisabledSitesSection({ domains, onAdd, onRemove }: DisabledSites
 
   return (
     <div className="section">
-      <span className="label">Disabled Sites</span>
+      <span className="label">{t('popup.disabledSites')}</span>
       <div className={styles.domainTags}>
         {domains.map((domain) => (
           <DomainTag key={domain} domain={domain} onRemove={() => onRemove(domain)} />
@@ -39,7 +41,7 @@ export function DisabledSitesSection({ domains, onAdd, onRemove }: DisabledSites
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <button className={styles.addBtn} onClick={handleAdd}>+ Add</button>
+        <button className={styles.addBtn} onClick={handleAdd}>{t('popup.addBtn')}</button>
       </div>
     </div>
   )

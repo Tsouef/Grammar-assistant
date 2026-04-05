@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { LANGUAGE_OPTIONS } from '../../../../shared/languages'
 
 interface TranslateBarProps {
@@ -6,11 +7,12 @@ interface TranslateBarProps {
 }
 
 export function TranslateBar({ onRequestTranslate }: TranslateBarProps) {
+  const { t } = useTranslation()
   const [targetLang, setTargetLang] = useState<string>(LANGUAGE_OPTIONS[0].code)
 
   return (
     <div className="translate-bar">
-      <span className="translate-label">Translate to</span>
+      <span className="translate-label">{t('panel.translateTo')}</span>
       <select
         className="translate-select"
         value={targetLang}
@@ -21,7 +23,7 @@ export function TranslateBar({ onRequestTranslate }: TranslateBarProps) {
         ))}
       </select>
       <button className="btn-translate" onClick={() => onRequestTranslate(targetLang)}>
-        Go
+        {t('panel.go')}
       </button>
     </div>
   )

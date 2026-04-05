@@ -1,4 +1,13 @@
-import { GrammarError, TonePreset } from '../../shared/types'
+import { GrammarError, TonePreset, UiLocale } from '../../shared/types'
+
+const EXPLANATION_LANG_NAMES: Record<UiLocale, string> = {
+  'en':    'English',
+  'en-GB': 'English',
+  'fr':    'French',
+  'de':    'German',
+  'es':    'Spanish',
+  'nl':    'Dutch',
+}
 
 function buildGrammarLangInstruction(language: string): string {
   return language === 'auto'
@@ -12,8 +21,9 @@ function buildRewriteLangInstruction(language: string): string {
     : `Rewrite the following text in ${language}.`
 }
 
-export function buildGrammarPrompt(text: string, language: string): string {
+export function buildGrammarPrompt(text: string, language: string, uiLanguage: UiLocale = 'en'): string {
   const langInstruction = buildGrammarLangInstruction(language)
+  const explanationLang = EXPLANATION_LANG_NAMES[uiLanguage]
   return `You are a strict grammar and spelling checker. ${langInstruction}
 
 Your job is to find real grammar, spelling, and word-choice errors in the text's own language — not style suggestions, and NEVER suggest replacing a word with its equivalent in another language.
@@ -40,7 +50,7 @@ Do NOT:
 Return a JSON array. Each error object must have:
 - "original": the exact erroneous word or phrase as it appears in the text
 - "replacement": the corrected version in the same language
-- "message": a short explanation of the rule, written in English
+- "message": a short explanation of the rule, written in ${explanationLang}
 - "context": 4–8 words surrounding the error to uniquely locate it in the text
 
 Return ONLY the JSON array, no explanation, no markdown. If there are truly no errors, return [].

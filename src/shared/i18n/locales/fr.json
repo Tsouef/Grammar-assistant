@@ -1,0 +1,56 @@
+{
+  "popup": {
+    "heading": "Grammar Assistant",
+    "provider": "Fournisseur",
+    "apiKeyRequired": "Clé API requise",
+    "baseUrl": "URL de base",
+    "baseUrlRequired": "URL de base requise",
+    "model": "Modèle",
+    "modelRequired": "Modèle requis",
+    "selectModel": "— choisir un modèle —",
+    "loadingModels": "Chargement des modèles…",
+    "ollamaUnreachable": "Ollama inaccessible — le serveur est-il lancé ?",
+    "textLanguage": "Langue du texte",
+    "uiLanguage": "Langue de l'interface",
+    "autoDetect": "Détection automatique",
+    "disabledSites": "Sites désactivés",
+    "addBtn": "+ Ajouter",
+    "save": "Enregistrer",
+    "saved": "Enregistré",
+    "showHide": "Afficher/masquer"
+  },
+  "panel": {
+    "checking": "Vérification…",
+    "translating": "Traduction…",
+    "rewriting": "Réécriture…",
+    "translation": "Traduction",
+    "aiSuggestion": "Suggestion IA",
+    "looksGood": "Aucune erreur",
+    "issueCount_one": "{{count}} erreur",
+    "issueCount_other": "{{count}} erreurs",
+    "improve": "✦ Améliorer",
+    "fixAll": "Tout corriger",
+    "useThisVersion": "Utiliser cette version",
+    "accept": "Accepter",
+    "dismiss": "Ignorer",
+    "translateTo": "Traduire vers",
+    "go": "Go",
+    "configureProvider": "Configurer un fournisseur dans les paramètres",
+    "openSettings": "Ouvrir les paramètres"
+  },
+  "tone": {
+    "shorter": "Plus court",
+    "formal": "Formel",
+    "direct": "Direct",
+    "technical": "Technique"
+  },
+  "error": {
+    "serviceUnreachable": "Service IA inaccessible",
+    "extensionError": "Erreur d'extension",
+    "extensionInvalidated": "Extension mise à jour — veuillez recharger la page",
+    "requestTimedOut": "Délai dépassé",
+    "rateLimited": "Limite atteinte — veuillez patienter",
+    "textTooLong": "Texte trop long — vérification des {{max}} premiers caractères",
+    "nothingToRewrite": "Rien à réécrire"
+  }
+}

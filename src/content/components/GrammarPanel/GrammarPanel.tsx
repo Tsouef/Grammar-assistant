@@ -1,5 +1,6 @@
 import { type CSSProperties, useState, forwardRef, useImperativeHandle, useEffect, useRef, useMemo, memo } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { EASE_OUT, MAX_Z_INDEX } from '../../../shared/constants'
 import { ShadowPortal, type ShadowPortalHandle } from '../ShadowPortal/ShadowPortal'
 import { PanelHeader } from './PanelHeader/PanelHeader'
@@ -37,6 +38,7 @@ interface ErrorSectionProps {
 }
 
 function ErrorSection({ fieldText, errors, onApplyAI, onClose }: ErrorSectionProps) {
+  const { t } = useTranslation()
   const segments = useMemo(() => buildSegments(fieldText, errors), [fieldText, errors])
   return (
     <>
@@ -47,7 +49,7 @@ function ErrorSection({ fieldText, errors, onApplyAI, onClose }: ErrorSectionPro
           onApplyAI(corrected, false)
           onClose()
         }}>
-          Fix all
+          {t('panel.fixAll')}
         </button>
       </div>
     </>
@@ -56,6 +58,7 @@ function ErrorSection({ fieldText, errors, onApplyAI, onClose }: ErrorSectionPro
 
 export const GrammarPanel = memo(forwardRef<GrammarPanelHandle, GrammarPanelProps>(
   ({ isOpen, state, field, onRequestAI, onApplyAI, onRequestTranslate, onClose, onDismiss, onOpenSettings }, ref) => {
+    const { t } = useTranslation()
     const shadowRef = useRef<ShadowPortalHandle>(null)
     const [hostStyle, setHostStyle] = useState<CSSProperties>({
       position: 'fixed',
@@ -152,8 +155,8 @@ export const GrammarPanel = memo(forwardRef<GrammarPanelHandle, GrammarPanelProp
               {state.type === 'ai-result' && (
                 <AIResultView
                   text={state.rewritten}
-                  primaryLabel="Use this version"
-                  secondaryLabel="Dismiss"
+                  primaryLabel={t('panel.useThisVersion')}
+                  secondaryLabel={t('panel.dismiss')}
                   onPrimary={() => { onApplyAI(state.rewritten, state.isSelection); onClose() }}
                   onSecondary={onDismiss}
                 />
@@ -162,8 +165,8 @@ export const GrammarPanel = memo(forwardRef<GrammarPanelHandle, GrammarPanelProp
               {state.type === 'translate-result' && (
                 <AIResultView
                   text={state.translated}
-                  primaryLabel="Accept"
-                  secondaryLabel="Dismiss"
+                  primaryLabel={t('panel.accept')}
+                  secondaryLabel={t('panel.dismiss')}
                   onPrimary={() => { onApplyAI(state.translated, false); onClose() }}
                   onSecondary={onDismiss}
                 />

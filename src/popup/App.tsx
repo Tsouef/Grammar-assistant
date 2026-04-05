@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { useConfig } from './hooks/useConfig'
-import type { Config, ProviderId } from '../shared/types'
+import type { Config, ProviderId, UiLocale } from '../shared/types'
 import { EASE_OUT, SAVED_VISIBLE_DURATION_MS } from '../shared/constants'
 import { PROVIDER_IDS } from '../shared/models'
+import i18n from '../shared/i18n/i18n'
 import styles from './App.module.css'
 import { ProviderSection } from './components/ProviderSection/ProviderSection'
 import type { PerProviderState } from './components/ProviderSection/ProviderSection'
 import { LanguageSection } from './components/LanguageSection/LanguageSection'
+import { UiLanguageSection } from './components/UiLanguageSection/UiLanguageSection'
 import { DisabledSitesSection } from './components/DisabledSitesSection/DisabledSitesSection'
 import { SaveButton } from './components/SaveButton/SaveButton'
 import { SavedMessage } from './components/SavedMessage/SavedMessage'
@@ -47,11 +50,13 @@ function initialPerProviderState(config: Config): Record<ProviderId, PerProvider
 }
 
 function AppForm({ config, saveConfig }: AppFormProps) {
+  const { t } = useTranslation()
   const [activeProvider, setActiveProvider] = useState<ProviderId>(config.activeProvider)
   const [providerStates, setProviderStates] = useState<Record<ProviderId, PerProviderState>>(
     () => initialPerProviderState(config)
   )
   const [language, setLanguage] = useState<Config['language']>(config.language)
+  const [uiLanguage, setUiLanguage] = useState<UiLocale>(config.uiLanguage)
   const [domains, setDomains] = useState([...config.disabledDomains])
   const [errors, setErrors] = useState<{ apiKey?: boolean; baseUrl?: boolean; model?: boolean }>({})
   const [savedVisible, setSavedVisible] = useState(false)
@@ -85,6 +90,11 @@ function AppForm({ config, saveConfig }: AppFormProps) {
     if (id === 'ollama' && patch.baseUrl !== undefined) {
       fetchOllamaModels(patch.baseUrl)
     }
+  }
+
+  function handleUiLanguageChange(locale: UiLocale) {
+    setUiLanguage(locale)
+    i18n.changeLanguage(locale)
   }
 
   function handleAddDomain(domain: string) {
@@ -125,6 +135,7 @@ function AppForm({ config, saveConfig }: AppFormProps) {
       activeProvider,
       providers,
       language,
+      uiLanguage,
       disabledDomains: domains,
     }
     await saveConfig(newConfig)
@@ -137,7 +148,7 @@ function AppForm({ config, saveConfig }: AppFormProps) {
     <>
       <h1 className={styles.heading}>
         <span className={styles.logoIcon}>✦</span>
-        Grammar Assistant
+        {t('popup.heading')}
       </h1>
       <motion.div variants={containerVariants} initial="hidden" animate="visible">
         <motion.div variants={sectionVariants} transition={{ duration: 0.3, ease: EASE_OUT }}>
@@ -153,6 +164,9 @@ function AppForm({ config, saveConfig }: AppFormProps) {
         </motion.div>
         <motion.div variants={sectionVariants} transition={{ duration: 0.3, ease: EASE_OUT }}>
           <LanguageSection value={language} onChange={setLanguage} />
+        </motion.div>
+        <motion.div variants={sectionVariants} transition={{ duration: 0.3, ease: EASE_OUT }}>
+          <UiLanguageSection value={uiLanguage} onChange={handleUiLanguageChange} />
         </motion.div>
         <motion.div variants={sectionVariants} transition={{ duration: 0.3, ease: EASE_OUT }}>
           <DisabledSitesSection

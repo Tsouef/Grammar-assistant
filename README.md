@@ -11,7 +11,12 @@ Works with **Gemini, Claude, OpenAI, Mistral, and Ollama**. Pick the provider an
 ### Grammar check
 Click the **✦** trigger button that appears when you focus any text field. The extension analyses your text and highlights every grammar, spelling, and word-choice error inline. Each highlight shows the suggested fix and a short explanation. Hit **Fix all** to apply every correction at once.
 
-Language support: English (US / UK), French, German, Spanish, Dutch — or **auto-detect**.
+Text language support: English (US / UK), French, German, Spanish, Dutch — or **auto-detect**.
+
+### Interface language (i18n)
+The extension UI and error explanations adapt to your chosen interface language — independently of the language you are writing in. Set your native language once in the popup; the AI will explain grammar mistakes in that language even if the text you are correcting is in a different one.
+
+Supported interface languages: English, English (UK), French, German, Spanish, Dutch.
 
 ### AI rewrite
 Hit **✦ Improve** to let the AI rewrite your full text (or just the selected portion) for clarity and natural flow. Review the diff, then accept or dismiss.
@@ -48,7 +53,7 @@ Add domains to a blocklist in the popup so the extension never activates on site
 
 3. Open `chrome://extensions`, enable **Developer mode**, click **Load unpacked**, and point it at the `dist/` folder.
 
-4. Open the extension popup, choose your **provider**, and enter your API key (or configure the Ollama URL).
+4. Open the extension popup, choose your **provider**, enter your API key (or configure the Ollama URL), and set your **interface language**.
 
 ### Development mode (watch)
 ```bash
@@ -85,7 +90,7 @@ Every provider implements the `AIProvider` interface (`src/background/providers/
 
 ```ts
 interface AIProvider {
-  checkGrammar(text: string, language: string): Promise<GrammarError[]>
+  checkGrammar(text: string, language: string, uiLanguage: UiLocale): Promise<GrammarError[]>
   rewrite(text: string, selection: string | undefined, language: string, tone?: TonePreset): Promise<string>
   translate(text: string, targetLanguage: string): Promise<string>
 }
@@ -113,6 +118,7 @@ The active provider is resolved at request time in `provider-factory.ts` based o
 ## Tech stack
 
 - **React 19** + TypeScript — panel UI and popup
+- **i18next** + react-i18next — runtime i18n with 6 locales
 - **Shadow DOM** — the panel is fully isolated from host page styles
 - **Vite** + `vite-plugin-web-extension` — MV3 build pipeline
 - **Vitest** + Testing Library — unit and component tests
@@ -132,7 +138,9 @@ src/
     utils/            # Grammar checker, AI rewrite, text apply, field detector
   popup/              # Extension popup (settings)
     components/       # ProviderSection, LanguageSection, DisabledSitesSection…
-  shared/             # Types, constants, storage, config defaults, provider models
+  shared/
+    i18n/             # i18next setup + locale JSON files (en, fr, de, es, nl, en-GB)
+                      # Types, constants, storage, config defaults, provider models
 ```
 
 ---
@@ -144,7 +152,7 @@ The core AI pipeline (grammar / rewrite / translate) is intentionally decoupled 
 - **Firefox** — MV3 support arrived in Firefox 109; a Firefox build should require only manifest adjustments and a few Web Extension API polyfills.
 - **Slack app** — expose the AI pipeline as a Bolt app. Grammar check and rewrite could run on message compose via a slash command or a message action, using the same prompt layer.
 - **Web app / bookmarklet** — a standalone page that accepts pasted text and runs the full pipeline, no install required.
-- **More languages** — the language list in `src/shared/languages.ts` is a short array; adding entries is the only change needed on the frontend side.
+- **More languages** — adding a new interface language means adding a locale JSON file in `src/shared/i18n/locales/` and registering it in `i18n.ts`.
 - **Custom tone presets** — let users define their own tone instructions in the popup.
 
 ---
