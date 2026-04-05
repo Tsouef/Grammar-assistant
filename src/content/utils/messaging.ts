@@ -6,37 +6,35 @@ import {
   isExtensionValid,
 } from '../../shared/constants'
 
-export function sendBackgroundMessage<T extends BackgroundResponse>(
+export async function sendBackgroundMessage<T extends BackgroundResponse>(
   message: BackgroundMessage
 ): Promise<T> {
-  return new Promise((resolve, reject) => {
-    if (!isExtensionValid()) {
-      reject(new Error(EXTENSION_INVALIDATED_MSG))
-      return
-    }
+  if (!isExtensionValid()) {
+    throw new Error(EXTENSION_INVALIDATED_MSG)
+  }
 
-    const timeout = setTimeout(() => reject(new Error('Request timed out')), REQUEST_TIMEOUT_MS)
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error('Request timed out')), REQUEST_TIMEOUT_MS)
+  )
 
-    try {
-      chrome.runtime.sendMessage(message, (response: BackgroundResponse) => {
-        clearTimeout(timeout)
-        if (chrome.runtime.lastError) {
-          reject(new Error(EXTENSION_ERROR_MSG))
-          return
-        }
-        if (!response) {
-          reject(new Error(EXTENSION_ERROR_MSG))
-          return
-        }
-        if ('error' in response && response.error) {
-          reject(new Error(response.error))
-          return
-        }
-        resolve(response as T)
-      })
-    } catch {
-      clearTimeout(timeout)
-      reject(new Error(EXTENSION_INVALIDATED_MSG))
+  let response: BackgroundResponse
+  try {
+    response = (await Promise.race([
+      chrome.runtime.sendMessage(message),
+      timeout,
+    ])) as BackgroundResponse
+  } catch (err) {
+    if (err instanceof Error && err.message === 'Request timed out') {
+      throw err
     }
-  })
+    throw new Error(EXTENSION_INVALIDATED_MSG)
+  }
+
+  if (!response) {
+    throw new Error(EXTENSION_ERROR_MSG)
+  }
+  if ('error' in response && response.error) {
+    throw new Error(response.error)
+  }
+  return response as T
 }

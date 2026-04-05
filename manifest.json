@@ -5,6 +5,12 @@
   "description": "On-demand grammar checking and AI rewriting for any web text field",
   "permissions": ["storage"],
   "host_permissions": ["<all_urls>"],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "grammar-assistant@tsouef.dev",
+      "strict_min_version": "109.0"
+    }
+  },
   "options_page": "src/popup/index.html",
   "background": {
     "service_worker": "src/background/index.ts",

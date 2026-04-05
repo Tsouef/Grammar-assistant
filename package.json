@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite build --watch",
+    "dev:firefox": "BROWSER=firefox vite build --watch",
     "build": "vite build",
+    "build:firefox": "BROWSER=firefox vite build",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src",
