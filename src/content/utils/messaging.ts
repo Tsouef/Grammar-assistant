@@ -1,5 +1,10 @@
 import type { BackgroundMessage, BackgroundResponse } from '../../shared/types'
-import { REQUEST_TIMEOUT_MS, EXTENSION_ERROR_MSG, EXTENSION_INVALIDATED_MSG, isExtensionValid } from '../../shared/constants'
+import {
+  REQUEST_TIMEOUT_MS,
+  EXTENSION_ERROR_MSG,
+  EXTENSION_INVALIDATED_MSG,
+  isExtensionValid,
+} from '../../shared/constants'
 
 export function sendBackgroundMessage<T extends BackgroundResponse>(
   message: BackgroundMessage

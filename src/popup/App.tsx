@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useConfig } from './hooks/useConfig'
@@ -28,8 +28,13 @@ const containerVariants = {
 
 export default function App() {
   const { config, saveConfig } = useConfig()
+
+  const theme = config?.uiTheme ?? 'dark'
+  useEffect(() => {
+    document.body.dataset.theme = theme
+  }, [theme])
+
   if (!config) return null
-  document.body.dataset.theme = config.uiTheme ?? 'dark'
   return <AppForm config={config} saveConfig={saveConfig} />
 }
 
@@ -54,8 +59,8 @@ function initialPerProviderState(config: Config): Record<ProviderId, PerProvider
 function AppForm({ config, saveConfig }: AppFormProps) {
   const { t } = useTranslation()
   const [activeProvider, setActiveProvider] = useState<ProviderId>(config.activeProvider)
-  const [providerStates, setProviderStates] = useState<Record<ProviderId, PerProviderState>>(
-    () => initialPerProviderState(config)
+  const [providerStates, setProviderStates] = useState<Record<ProviderId, PerProviderState>>(() =>
+    initialPerProviderState(config)
   )
   const [language, setLanguage] = useState<Config['language']>(config.language)
   const [uiLanguage, setUiLanguage] = useState<UiLocale>(config.uiLanguage)
@@ -64,35 +69,40 @@ function AppForm({ config, saveConfig }: AppFormProps) {
   const [errors, setErrors] = useState<{ apiKey?: boolean; baseUrl?: boolean; model?: boolean }>({})
   const [savedVisible, setSavedVisible] = useState(false)
   const [ollamaModels, setOllamaModels] = useState<string[]>([])
-  const [ollamaModelsStatus, setOllamaModelsStatus] = useState<'idle' | 'loading' | 'error'>('idle')
+  const [ollamaModelsStatus, setOllamaModelsStatus] = useState<'idle' | 'loading' | 'error'>(
+    config.activeProvider === 'ollama' ? 'loading' : 'idle'
+  )
 
-  const fetchOllamaModels = useCallback((baseUrl: string) => {
-    if (!baseUrl) return
-    setOllamaModelsStatus('loading')
-    chrome.runtime.sendMessage({ type: 'GET_OLLAMA_MODELS', baseUrl })
-      .then((response: { models: string[] }) => {
-        setOllamaModels(response.models)
-        setOllamaModelsStatus('idle')
-      })
-      .catch(() => setOllamaModelsStatus('error'))
-  }, [])
+  const ollamaBaseUrl = providerStates.ollama.baseUrl
 
   useEffect(() => {
-    if (activeProvider === 'ollama') {
-      fetchOllamaModels(providerStates.ollama.baseUrl)
+    if (activeProvider !== 'ollama' || !ollamaBaseUrl) return
+    let cancelled = false
+    chrome.runtime
+      .sendMessage({ type: 'GET_OLLAMA_MODELS', baseUrl: ollamaBaseUrl })
+      .then((response: { models: string[] }) => {
+        if (!cancelled) {
+          setOllamaModels(response.models)
+          setOllamaModelsStatus('idle')
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setOllamaModelsStatus('error')
+      })
+    return () => {
+      cancelled = true
     }
-  }, [activeProvider]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeProvider, ollamaBaseUrl])
 
   function handleProviderChange(id: ProviderId) {
     setActiveProvider(id)
     setErrors({})
+    if (id === 'ollama') setOllamaModelsStatus('loading')
   }
 
   function handleStateChange(id: ProviderId, patch: Partial<PerProviderState>) {
     setProviderStates((prev) => ({ ...prev, [id]: { ...prev[id], ...patch } }))
-    if (id === 'ollama' && patch.baseUrl !== undefined) {
-      fetchOllamaModels(patch.baseUrl)
-    }
+    if (id === 'ollama' && patch.baseUrl !== undefined) setOllamaModelsStatus('loading')
   }
 
   function handleUiLanguageChange(locale: UiLocale) {

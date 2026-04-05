@@ -1,4 +1,12 @@
-import { type CSSProperties, type ReactNode, useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
+import {
+  type CSSProperties,
+  type ReactNode,
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from 'react'
 import { createPortal } from 'react-dom'
 import { panelStyles } from '../GrammarPanel/panel-styles'
 
@@ -19,7 +27,9 @@ export const ShadowPortal = forwardRef<ShadowPortalHandle, ShadowPortalProps>(
     const [mountPoint, setMountPoint] = useState<HTMLElement | null>(null)
 
     useImperativeHandle(ref, () => ({
-      get host() { return hostRef.current }
+      get host() {
+        return hostRef.current
+      },
     }))
 
     useEffect(() => {

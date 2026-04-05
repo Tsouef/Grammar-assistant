@@ -13,7 +13,9 @@
   font-family: inherit;
   letter-spacing: -0.01em;
   margin-top: 2px;
-  transition: filter 150ms ease, box-shadow 150ms ease;
+  transition:
+    filter 150ms ease,
+    box-shadow 150ms ease;
 }
 
 .btnSave:hover {

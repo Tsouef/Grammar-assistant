@@ -31,7 +31,11 @@ describe('usePanelState', () => {
   it('transitions to ai-result', () => {
     const { result } = renderHook(() => usePanelState())
     act(() => result.current.setAIResult('Fixed text', false))
-    expect(result.current.state).toEqual({ type: 'ai-result', rewritten: 'Fixed text', isSelection: false })
+    expect(result.current.state).toEqual({
+      type: 'ai-result',
+      rewritten: 'Fixed text',
+      isSelection: false,
+    })
   })
 
   it('transitions to translating', () => {

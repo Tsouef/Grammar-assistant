@@ -14,7 +14,12 @@ function applyText(field: HTMLElement, newText: string): void {
   }
 }
 
-export function applyAI(field: HTMLElement, rewritten: string, isSelection: boolean, savedRange?: Range): void {
+export function applyAI(
+  field: HTMLElement,
+  rewritten: string,
+  isSelection: boolean,
+  savedRange?: Range
+): void {
   field.focus()
   if (isSelection && savedRange) {
     const sel = window.getSelection()

@@ -30,10 +30,18 @@
   flex-shrink: 0;
 }
 
-.status-icon.success { color: var(--success); }
-.status-icon.warning { color: var(--warning); }
-.status-icon.error   { color: var(--danger); }
-.status-icon.info    { color: var(--accent-blue); }
+.status-icon.success {
+  color: var(--success);
+}
+.status-icon.warning {
+  color: var(--warning);
+}
+.status-icon.error {
+  color: var(--danger);
+}
+.status-icon.info {
+  color: var(--accent-blue);
+}
 
 /* ─── Improve button ─────────────────────────────────────────────────────── */
 
@@ -48,7 +56,9 @@
   font-family: inherit;
   font-weight: 600;
   white-space: nowrap;
-  transition: filter 120ms ease, box-shadow 120ms ease;
+  transition:
+    filter 120ms ease,
+    box-shadow 120ms ease;
   letter-spacing: -0.01em;
 }
 

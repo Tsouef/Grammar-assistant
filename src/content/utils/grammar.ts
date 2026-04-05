@@ -1,5 +1,14 @@
-import type { GrammarError, CheckGrammarMessage, CheckGrammarResponse, UiLocale } from '../../shared/types'
-import { RATE_LIMIT_BACKOFF_MS, MAX_GRAMMAR_TEXT_LENGTH, toErrorMessage } from '../../shared/constants'
+import type {
+  GrammarError,
+  CheckGrammarMessage,
+  CheckGrammarResponse,
+  UiLocale,
+} from '../../shared/types'
+import {
+  RATE_LIMIT_BACKOFF_MS,
+  MAX_GRAMMAR_TEXT_LENGTH,
+  toErrorMessage,
+} from '../../shared/constants'
 import { sendBackgroundMessage } from './messaging'
 
 export function createGrammarChecker(

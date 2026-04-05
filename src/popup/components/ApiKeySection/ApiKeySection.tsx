@@ -8,10 +8,18 @@ interface ApiKeySectionProps {
   error: boolean
 }
 
-export function ApiKeySection({ value, onChange, visible, onToggleVisible, error }: ApiKeySectionProps) {
+export function ApiKeySection({
+  value,
+  onChange,
+  visible,
+  onToggleVisible,
+  error,
+}: ApiKeySectionProps) {
   return (
     <div className="section">
-      <label className="label" htmlFor="api-key">Gemini API key</label>
+      <label className="label" htmlFor="api-key">
+        Gemini API key
+      </label>
       <div className={styles.inputRow}>
         <input
           type={visible ? 'text' : 'password'}
@@ -25,9 +33,7 @@ export function ApiKeySection({ value, onChange, visible, onToggleVisible, error
           👁
         </button>
       </div>
-      {error && (
-        <p className={styles.errorMsg}>API key required</p>
-      )}
+      {error && <p className={styles.errorMsg}>API key required</p>}
     </div>
   )
 }

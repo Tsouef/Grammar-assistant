@@ -37,20 +37,23 @@ export function usePanelOrchestration(config: Config) {
     onError: panelState.setError,
   })
 
-  const openPanel = useCallback((field: HTMLElement) => {
-    panelFieldRef.current = field
-    setPanelField(field)
-    setIsPanelOpen(true)
-    panelState.setChecking()
-    grammarCheck(field.textContent ?? '')
+  const openPanel = useCallback(
+    (field: HTMLElement) => {
+      panelFieldRef.current = field
+      setPanelField(field)
+      setIsPanelOpen(true)
+      panelState.setChecking()
+      grammarCheck(field.textContent ?? '')
 
-    // Wire input listener for live re-checking
-    if (inputListenerRef.current) {
-      field.removeEventListener('input', inputListenerRef.current)
-    }
-    inputListenerRef.current = () => grammarCheck(field.textContent ?? '')
-    field.addEventListener('input', inputListenerRef.current)
-  }, [grammarCheck, panelState])
+      // Wire input listener for live re-checking
+      if (inputListenerRef.current) {
+        field.removeEventListener('input', inputListenerRef.current)
+      }
+      inputListenerRef.current = () => grammarCheck(field.textContent ?? '')
+      field.addEventListener('input', inputListenerRef.current)
+    },
+    [grammarCheck, panelState]
+  )
 
   const closePanel = useCallback(() => {
     setIsPanelOpen(false)
@@ -78,7 +81,9 @@ export function usePanelOrchestration(config: Config) {
       if (panelRef.current?.isEventInside(e)) {
         // Set flag so focusout deactivation is suppressed during this interaction
         panelInteractingRef.current = true
-        requestAnimationFrame(() => { panelInteractingRef.current = false })
+        requestAnimationFrame(() => {
+          panelInteractingRef.current = false
+        })
         return
       }
       if (!isPanelOpen) return
@@ -89,46 +94,53 @@ export function usePanelOrchestration(config: Config) {
     return () => document.removeEventListener('mousedown', handleMouseDown, true)
   }, [isPanelOpen, closePanelRef])
 
-  const handleRequestAI = useCallback((tone?: TonePreset) => {
-    const field = panelFieldRef.current
-    if (!field) return
-    panelState.setAIRewriting()
-    requestAIRewrite(
-      field,
-      config.language,
-      (rewritten, isSelection, savedRange) => {
-        savedRangeRef.current = savedRange
-        panelState.setAIResult(rewritten, isSelection)
-      },
-      (err) => panelState.setError(err),
-      tone,
-    )
-  }, [config.language, panelState])
+  const handleRequestAI = useCallback(
+    (tone?: TonePreset) => {
+      const field = panelFieldRef.current
+      if (!field) return
+      panelState.setAIRewriting()
+      requestAIRewrite(
+        field,
+        config.language,
+        (rewritten, isSelection, savedRange) => {
+          savedRangeRef.current = savedRange
+          panelState.setAIResult(rewritten, isSelection)
+        },
+        (err) => panelState.setError(err),
+        tone
+      )
+    },
+    [config.language, panelState]
+  )
 
   const handleApplyAI = useCallback((rewritten: string, isSelection: boolean) => {
-    if (panelFieldRef.current) applyAI(panelFieldRef.current, rewritten, isSelection, savedRangeRef.current)
+    if (panelFieldRef.current)
+      applyAI(panelFieldRef.current, rewritten, isSelection, savedRangeRef.current)
   }, [])
 
-  const handleRequestTranslate = useCallback((targetLang: string) => {
-    const field = panelFieldRef.current
-    if (!field) return
-    panelState.setTranslating()
-    const myId = ++translateRequestIdRef.current
-    const message: TranslateMessage = {
-      type: 'TRANSLATE',
-      text: field.textContent ?? '',
-      targetLanguage: targetLang,
-    }
-    sendBackgroundMessage<TranslateResponse>(message)
-      .then((response) => {
-        if (myId !== translateRequestIdRef.current) return
-        panelState.setTranslateResult(response.translated)
-      })
-      .catch((err) => {
-        if (myId !== translateRequestIdRef.current) return
-        panelState.setError(toErrorMessage(err))
-      })
-  }, [panelState])
+  const handleRequestTranslate = useCallback(
+    (targetLang: string) => {
+      const field = panelFieldRef.current
+      if (!field) return
+      panelState.setTranslating()
+      const myId = ++translateRequestIdRef.current
+      const message: TranslateMessage = {
+        type: 'TRANSLATE',
+        text: field.textContent ?? '',
+        targetLanguage: targetLang,
+      }
+      sendBackgroundMessage<TranslateResponse>(message)
+        .then((response) => {
+          if (myId !== translateRequestIdRef.current) return
+          panelState.setTranslateResult(response.translated)
+        })
+        .catch((err) => {
+          if (myId !== translateRequestIdRef.current) return
+          panelState.setError(toErrorMessage(err))
+        })
+    },
+    [panelState]
+  )
 
   return {
     panelRef,

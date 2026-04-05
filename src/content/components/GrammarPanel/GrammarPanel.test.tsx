@@ -22,8 +22,15 @@ vi.mock('motion/react', async (importOriginal) => {
     motion: {
       div: ({ children, className, ...rest }: React.HTMLAttributes<HTMLDivElement>) => {
         const { initial, animate, exit, transition, ...divRest } = rest as Record<string, unknown>
-        void initial; void animate; void exit; void transition
-        return <div className={className} {...divRest as React.HTMLAttributes<HTMLDivElement>}>{children}</div>
+        void initial
+        void animate
+        void exit
+        void transition
+        return (
+          <div className={className} {...(divRest as React.HTMLAttributes<HTMLDivElement>)}>
+            {children}
+          </div>
+        )
       },
     },
   }
@@ -215,7 +222,9 @@ describe('GrammarPanel — translation', () => {
   })
 
   it('"Use this version" calls onClose', async () => {
-    const props = renderPanel({ state: { type: 'ai-result', rewritten: 'Fixed text', isSelection: false } })
+    const props = renderPanel({
+      state: { type: 'ai-result', rewritten: 'Fixed text', isSelection: false },
+    })
     await userEvent.click(screen.getByText('Use this version'))
     expect(props.onClose).toHaveBeenCalledTimes(1)
   })
@@ -227,7 +236,9 @@ describe('GrammarPanel — translation', () => {
   })
 
   it('"Dismiss" button in ai-result calls onDismiss', async () => {
-    const props = renderPanel({ state: { type: 'ai-result', rewritten: 'Fixed text', isSelection: false } })
+    const props = renderPanel({
+      state: { type: 'ai-result', rewritten: 'Fixed text', isSelection: false },
+    })
     await userEvent.click(screen.getByText('Dismiss'))
     expect(props.onDismiss).toHaveBeenCalledTimes(1)
   })
@@ -260,11 +271,14 @@ describe('GrammarPanel — open settings CTA', () => {
 describe('GrammarPanel — scroll repositioning', () => {
   beforeEach(() => {
     // jsdom does not implement ResizeObserver — stub it out
-    vi.stubGlobal('ResizeObserver', class {
-      observe() {}
-      unobserve() {}
-      disconnect() {}
-    })
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        observe() {}
+        unobserve() {}
+        disconnect() {}
+      }
+    )
   })
 
   it('calls reposition when window scroll event fires', async () => {
@@ -274,10 +288,20 @@ describe('GrammarPanel — scroll repositioning', () => {
     field.setAttribute('contenteditable', 'true')
     document.body.appendChild(field)
 
-    const getBoundingClientRect = vi.fn(() => ({
-      top: 400, bottom: 450, left: 100, right: 400, width: 300, height: 50,
-      x: 100, y: 400, toJSON: () => ({}),
-    } as DOMRect))
+    const getBoundingClientRect = vi.fn(
+      () =>
+        ({
+          top: 400,
+          bottom: 450,
+          left: 100,
+          right: 400,
+          width: 300,
+          height: 50,
+          x: 100,
+          y: 400,
+          toJSON: () => ({}),
+        }) as DOMRect
+    )
     Object.defineProperty(field, 'getBoundingClientRect', { value: getBoundingClientRect })
 
     render(

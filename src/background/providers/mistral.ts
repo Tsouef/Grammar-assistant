@@ -1,6 +1,12 @@
 import type { GrammarError, TonePreset, UiLocale } from '../../shared/types'
 import type { AIProvider } from './types'
-import { buildGrammarPrompt, buildRewritePrompt, buildToneRewritePrompt, buildTranslatePrompt, parseGrammarErrors } from './prompts'
+import {
+  buildGrammarPrompt,
+  buildRewritePrompt,
+  buildToneRewritePrompt,
+  buildTranslatePrompt,
+  parseGrammarErrors,
+} from './prompts'
 import { REQUEST_TIMEOUT_MS } from '../../shared/constants'
 
 const BASE_URL = 'https://api.mistral.ai/v1/chat/completions'
@@ -15,7 +21,7 @@ async function callMistral(prompt: string, apiKey: string, model: string): Promi
     response = await fetch(BASE_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -31,12 +37,13 @@ async function callMistral(prompt: string, apiKey: string, model: string): Promi
   clearTimeout(timer)
 
   if (!response.ok) {
-    if (response.status === 401 || response.status === 403) throw new Error('Invalid API key for Mistral')
+    if (response.status === 401 || response.status === 403)
+      throw new Error('Invalid API key for Mistral')
     if (response.status === 429) throw new Error('RATE_LIMIT')
     throw new Error(`Mistral API error: ${response.status}`)
   }
 
-  const data = await response.json() as { choices: Array<{ message: { content: string } }> }
+  const data = (await response.json()) as { choices: Array<{ message: { content: string } }> }
   const text = data.choices?.[0]?.message?.content
   if (!text) throw new Error('Unexpected Mistral API response shape')
   return text.trim()
@@ -48,12 +55,25 @@ export class MistralProvider implements AIProvider {
     private readonly model: string = 'mistral-small-latest'
   ) {}
 
-  async checkGrammar(text: string, language: string, uiLanguage: UiLocale): Promise<GrammarError[]> {
-    const raw = await callMistral(buildGrammarPrompt(text, language, uiLanguage), this.apiKey, this.model)
+  async checkGrammar(
+    text: string,
+    language: string,
+    uiLanguage: UiLocale
+  ): Promise<GrammarError[]> {
+    const raw = await callMistral(
+      buildGrammarPrompt(text, language, uiLanguage),
+      this.apiKey,
+      this.model
+    )
     return parseGrammarErrors(raw)
   }
 
-  async rewrite(text: string, selection: string | undefined, language: string, tone?: TonePreset): Promise<string> {
+  async rewrite(
+    text: string,
+    selection: string | undefined,
+    language: string,
+    tone?: TonePreset
+  ): Promise<string> {
     const prompt = tone
       ? buildToneRewritePrompt(text, tone, language, selection)
       : buildRewritePrompt(text, selection, language)

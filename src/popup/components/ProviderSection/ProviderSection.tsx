@@ -1,7 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import styles from './ProviderSection.module.css'
 import type { ProviderId } from '../../../shared/types'
-import { PROVIDER_MODELS, PROVIDER_LABELS, API_KEY_LABELS, PROVIDER_IDS } from '../../../shared/models'
+import {
+  PROVIDER_MODELS,
+  PROVIDER_LABELS,
+  API_KEY_LABELS,
+  PROVIDER_IDS,
+} from '../../../shared/models'
 
 export type PerProviderState = { apiKey: string; model: string; baseUrl: string }
 
@@ -37,14 +42,18 @@ export function ProviderSection({
   return (
     <div className="section">
       {/* Provider selector */}
-      <label className="label" htmlFor="provider-select">{t('popup.provider')}</label>
+      <label className="label" htmlFor="provider-select">
+        {t('popup.provider')}
+      </label>
       <select
         id="provider-select"
         value={activeProvider}
         onChange={(e) => onProviderChange(e.target.value as ProviderId)}
       >
         {PROVIDER_IDS.map((id) => (
-          <option key={id} value={id}>{PROVIDER_LABELS[id]}</option>
+          <option key={id} value={id}>
+            {PROVIDER_LABELS[id]}
+          </option>
         ))}
       </select>
 
@@ -70,7 +79,9 @@ export function ProviderSection({
       {/* Base URL — Ollama only */}
       {isOllama && (
         <div className={styles.field}>
-          <label className="label" htmlFor="base-url">{t('popup.baseUrl')}</label>
+          <label className="label" htmlFor="base-url">
+            {t('popup.baseUrl')}
+          </label>
           <input
             type="text"
             id="base-url"
@@ -84,7 +95,9 @@ export function ProviderSection({
 
       {/* Model selector */}
       <div className={styles.field}>
-        <label className="label" htmlFor="model-select">{t('popup.model')}</label>
+        <label className="label" htmlFor="model-select">
+          {t('popup.model')}
+        </label>
         {isOllama ? (
           ollamaModelsStatus === 'loading' ? (
             <p className={styles.statusMsg}>{t('popup.loadingModels')}</p>
@@ -99,7 +112,9 @@ export function ProviderSection({
               >
                 {!state.model && <option value="">{t('popup.selectModel')}</option>}
                 {ollamaModels.map((m) => (
-                  <option key={m} value={m}>{m}</option>
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
                 ))}
               </select>
               {errors.model && <p className={styles.errorMsg}>{t('popup.modelRequired')}</p>}
@@ -108,11 +123,15 @@ export function ProviderSection({
         ) : (
           <select
             id="model-select"
-            value={state.model || PROVIDER_MODELS[activeProvider as Exclude<ProviderId, 'ollama'>][0]}
+            value={
+              state.model || PROVIDER_MODELS[activeProvider as Exclude<ProviderId, 'ollama'>][0]
+            }
             onChange={(e) => onStateChange(activeProvider, { model: e.target.value })}
           >
             {PROVIDER_MODELS[activeProvider as Exclude<ProviderId, 'ollama'>].map((m) => (
-              <option key={m} value={m}>{m}</option>
+              <option key={m} value={m}>
+                {m}
+              </option>
             ))}
           </select>
         )}

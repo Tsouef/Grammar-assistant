@@ -11,7 +11,9 @@ export function LanguageSection({ value, onChange }: LanguageSectionProps) {
   const { t } = useTranslation()
   return (
     <div className="section">
-      <label className="label" htmlFor="language">{t('popup.textLanguage')}</label>
+      <label className="label" htmlFor="language">
+        {t('popup.textLanguage')}
+      </label>
       <select
         id="language"
         value={value}
@@ -19,7 +21,9 @@ export function LanguageSection({ value, onChange }: LanguageSectionProps) {
       >
         <option value="auto">{t('popup.autoDetect')}</option>
         {LANGUAGE_OPTIONS.map(({ code, label }) => (
-          <option key={code} value={code}>{label}</option>
+          <option key={code} value={code}>
+            {label}
+          </option>
         ))}
       </select>
     </div>

@@ -1,13 +1,13 @@
 interface SelectorRule {
-  hostname: string   // exact match or suffix match
+  hostname: string // exact match or suffix match
   selector: string
 }
 
 const SELECTOR_RULES: SelectorRule[] = [
-  { hostname: 'app.slack.com',   selector: 'div.ql-editor[contenteditable]' },
+  { hostname: 'app.slack.com', selector: 'div.ql-editor[contenteditable]' },
   { hostname: 'mail.google.com', selector: 'div[role="textbox"][contenteditable]' },
-  { hostname: 'atlassian.net',   selector: 'div.ak-editor-content-area' },
-  { hostname: '*',               selector: 'div[contenteditable="true"], textarea' },
+  { hostname: 'atlassian.net', selector: 'div.ak-editor-content-area' },
+  { hostname: '*', selector: 'div[contenteditable="true"], textarea' },
 ]
 
 export function getSelectorForHostname(hostname: string): string {

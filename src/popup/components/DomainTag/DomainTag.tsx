@@ -9,7 +9,9 @@ export function DomainTag({ domain, onRemove }: DomainTagProps) {
   return (
     <div className={styles.domainTag}>
       {domain}
-      <button onClick={onRemove} title={`Remove ${domain}`}>×</button>
+      <button onClick={onRemove} title={`Remove ${domain}`}>
+        ×
+      </button>
     </div>
   )
 }

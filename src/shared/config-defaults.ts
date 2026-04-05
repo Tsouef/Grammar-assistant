@@ -3,11 +3,11 @@ import type { Config } from './types'
 export const DEFAULT_CONFIG: Config = {
   activeProvider: 'gemini',
   providers: [
-    { id: 'gemini',  apiKey: '' },
-    { id: 'claude',  apiKey: '' },
-    { id: 'openai',  apiKey: '' },
+    { id: 'gemini', apiKey: '' },
+    { id: 'claude', apiKey: '' },
+    { id: 'openai', apiKey: '' },
     { id: 'mistral', apiKey: '' },
-    { id: 'ollama',  baseUrl: 'http://localhost:11434' },
+    { id: 'ollama', baseUrl: 'http://localhost:11434' },
   ],
   language: 'auto',
   uiLanguage: 'en',

@@ -24,7 +24,10 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  transition: color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+  transition:
+    color 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease;
   letter-spacing: 0.01em;
 }
 

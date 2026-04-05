@@ -41,7 +41,9 @@ export function DisabledSitesSection({ domains, onAdd, onRemove }: DisabledSites
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <button className={styles.addBtn} onClick={handleAdd}>{t('popup.addBtn')}</button>
+        <button className={styles.addBtn} onClick={handleAdd}>
+          {t('popup.addBtn')}
+        </button>
       </div>
     </div>
   )

@@ -1,6 +1,12 @@
 import type { GrammarError, TonePreset, UiLocale } from '../../shared/types'
 import type { AIProvider } from './types'
-import { buildGrammarPrompt, buildRewritePrompt, buildToneRewritePrompt, buildTranslatePrompt, parseGrammarErrors } from './prompts'
+import {
+  buildGrammarPrompt,
+  buildRewritePrompt,
+  buildToneRewritePrompt,
+  buildTranslatePrompt,
+  parseGrammarErrors,
+} from './prompts'
 import { REQUEST_TIMEOUT_MS } from '../../shared/constants'
 
 const FETCH_TIMEOUT_MS = REQUEST_TIMEOUT_MS - 1_000
@@ -34,7 +40,7 @@ async function callOllama(prompt: string, baseUrl: string, model: string): Promi
     throw new Error(`Ollama API error: ${response.status}${detail ? ` — ${detail}` : ''}`)
   }
 
-  const data = await response.json() as { message: { content: string } }
+  const data = (await response.json()) as { message: { content: string } }
   const text = data.message?.content
   if (!text) throw new Error('Unexpected Ollama API response shape')
   return text.trim()
@@ -48,7 +54,7 @@ export async function fetchOllamaModels(baseUrl: string): Promise<string[]> {
     throw new Error('OLLAMA_UNREACHABLE')
   }
   if (!response.ok) throw new Error('OLLAMA_UNREACHABLE')
-  const data = await response.json() as { models: Array<{ name: string }> }
+  const data = (await response.json()) as { models: Array<{ name: string }> }
   return data.models.map((m) => m.name)
 }
 
@@ -58,12 +64,25 @@ export class OllamaProvider implements AIProvider {
     private readonly model: string = ''
   ) {}
 
-  async checkGrammar(text: string, language: string, uiLanguage: UiLocale): Promise<GrammarError[]> {
-    const raw = await callOllama(buildGrammarPrompt(text, language, uiLanguage), this.baseUrl, this.model)
+  async checkGrammar(
+    text: string,
+    language: string,
+    uiLanguage: UiLocale
+  ): Promise<GrammarError[]> {
+    const raw = await callOllama(
+      buildGrammarPrompt(text, language, uiLanguage),
+      this.baseUrl,
+      this.model
+    )
     return parseGrammarErrors(raw)
   }
 
-  async rewrite(text: string, selection: string | undefined, language: string, tone?: TonePreset): Promise<string> {
+  async rewrite(
+    text: string,
+    selection: string | undefined,
+    language: string,
+    tone?: TonePreset
+  ): Promise<string> {
     const prompt = tone
       ? buildToneRewritePrompt(text, tone, language, selection)
       : buildRewritePrompt(text, selection, language)

@@ -6,9 +6,9 @@ export type UiTheme = 'dark' | 'light'
 
 export interface ProviderConfig {
   id: ProviderId
-  apiKey?: string    // absent for Ollama
-  baseUrl?: string   // Ollama only — default: http://localhost:11434
-  model?: string     // selected model; undefined = first in provider's list
+  apiKey?: string // absent for Ollama
+  baseUrl?: string // Ollama only — default: http://localhost:11434
+  model?: string // selected model; undefined = first in provider's list
 }
 
 export interface Config {
@@ -21,10 +21,10 @@ export interface Config {
 }
 
 export interface GrammarError {
-  original: string      // erroneous word or phrase as it appears in the text
-  replacement: string   // suggested correction
-  message: string       // explanation shown to user
-  context: string       // 4–8 word surrounding phrase used to locate original
+  original: string // erroneous word or phrase as it appears in the text
+  replacement: string // suggested correction
+  message: string // explanation shown to user
+  context: string // 4–8 word surrounding phrase used to locate original
 }
 
 export type TonePreset = 'shorter' | 'formal' | 'direct' | 'technical' | 'grammar-fix'
@@ -59,7 +59,11 @@ export interface GetOllamaModelsResponse {
   models: string[]
 }
 
-export type BackgroundMessage = CheckGrammarMessage | AIRewriteMessage | TranslateMessage | GetOllamaModelsMessage
+export type BackgroundMessage =
+  | CheckGrammarMessage
+  | AIRewriteMessage
+  | TranslateMessage
+  | GetOllamaModelsMessage
 
 export interface CheckGrammarResponse {
   errors: GrammarError[]
@@ -77,4 +81,9 @@ export interface ErrorResponse {
   error: string
 }
 
-export type BackgroundResponse = CheckGrammarResponse | AIRewriteResponse | TranslateResponse | GetOllamaModelsResponse | ErrorResponse
+export type BackgroundResponse =
+  | CheckGrammarResponse
+  | AIRewriteResponse
+  | TranslateResponse
+  | GetOllamaModelsResponse
+  | ErrorResponse

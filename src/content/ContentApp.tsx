@@ -38,11 +38,7 @@ export function ContentApp({ config: initialConfig }: ContentAppProps) {
     <>
       <AnimatePresence>
         {activeField && (
-          <TriggerButton
-            key="trigger"
-            field={activeField}
-            onClick={() => openPanel(activeField)}
-          />
+          <TriggerButton key="trigger" field={activeField} onClick={() => openPanel(activeField)} />
         )}
       </AnimatePresence>
 

@@ -6,22 +6,21 @@ beforeEach(() => {
 })
 
 const chatResponse = (text: string) =>
-  new Response(
-    JSON.stringify({ message: { role: 'assistant', content: text } }),
-    { status: 200 }
-  )
+  new Response(JSON.stringify({ message: { role: 'assistant', content: text } }), { status: 200 })
 
 describe('OllamaProvider.checkGrammar', () => {
   it('throws "AI service unreachable" on network error', async () => {
     vi.mocked(fetch).mockRejectedValue(new Error('network'))
     const provider = new OllamaProvider('http://localhost:11434')
-    await expect(provider.checkGrammar('test', 'auto')).rejects.toThrow('AI service unreachable')
+    await expect(provider.checkGrammar('test', 'auto', 'en')).rejects.toThrow(
+      'AI service unreachable'
+    )
   })
 
   it('calls {baseUrl}/api/chat', async () => {
     vi.mocked(fetch).mockResolvedValue(chatResponse('[]'))
     const provider = new OllamaProvider('http://localhost:11434')
-    await provider.checkGrammar('text', 'auto')
+    await provider.checkGrammar('text', 'auto', 'en')
     const calledUrl = vi.mocked(fetch).mock.calls[0][0] as string
     expect(calledUrl).toBe('http://localhost:11434/api/chat')
   })
@@ -29,7 +28,7 @@ describe('OllamaProvider.checkGrammar', () => {
   it('uses custom model in request body', async () => {
     vi.mocked(fetch).mockResolvedValue(chatResponse('[]'))
     const provider = new OllamaProvider('http://localhost:11434', 'llama3.2')
-    await provider.checkGrammar('text', 'auto')
+    await provider.checkGrammar('text', 'auto', 'en')
     const body = JSON.parse(vi.mocked(fetch).mock.calls[0][1]!.body as string)
     expect(body.model).toBe('llama3.2')
   })
@@ -37,16 +36,18 @@ describe('OllamaProvider.checkGrammar', () => {
   it('sets stream: false in request body', async () => {
     vi.mocked(fetch).mockResolvedValue(chatResponse('[]'))
     const provider = new OllamaProvider('http://localhost:11434')
-    await provider.checkGrammar('text', 'auto')
+    await provider.checkGrammar('text', 'auto', 'en')
     const body = JSON.parse(vi.mocked(fetch).mock.calls[0][1]!.body as string)
     expect(body.stream).toBe(false)
   })
 
   it('returns parsed errors on success', async () => {
-    const errors = [{ original: 'are', replacement: 'is', message: 'SVA', context: 'data are wrong' }]
+    const errors = [
+      { original: 'are', replacement: 'is', message: 'SVA', context: 'data are wrong' },
+    ]
     vi.mocked(fetch).mockResolvedValue(chatResponse(JSON.stringify(errors)))
     const provider = new OllamaProvider('http://localhost:11434')
-    expect(await provider.checkGrammar('data are wrong', 'auto')).toEqual(errors)
+    expect(await provider.checkGrammar('data are wrong', 'auto', 'en')).toEqual(errors)
   })
 })
 

@@ -15,6 +15,11 @@ export interface GeminiApiResponse {
 
 export interface AIProvider {
   checkGrammar(text: string, language: string, uiLanguage: UiLocale): Promise<GrammarError[]>
-  rewrite(text: string, selection: string | undefined, language: string, tone?: TonePreset): Promise<string>
+  rewrite(
+    text: string,
+    selection: string | undefined,
+    language: string,
+    tone?: TonePreset
+  ): Promise<string>
   translate(text: string, targetLanguage: string): Promise<string>
 }

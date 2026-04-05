@@ -17,9 +17,16 @@ vi.mock('motion/react', async (importOriginal) => {
     ...actual,
     motion: {
       button: (props: ButtonHTMLAttributes<HTMLButtonElement> & { style?: CSSProperties }) => {
-        const { initial, animate, exit, whileHover, transition, ...rest } = props as Record<string, unknown>
-        void initial; void animate; void exit; void whileHover; void transition
-        return <button {...rest as ButtonHTMLAttributes<HTMLButtonElement>} />
+        const { initial, animate, exit, whileHover, transition, ...rest } = props as Record<
+          string,
+          unknown
+        >
+        void initial
+        void animate
+        void exit
+        void whileHover
+        void transition
+        return <button {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)} />
       },
     },
   }

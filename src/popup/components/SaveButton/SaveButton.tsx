@@ -9,11 +9,7 @@ interface SaveButtonProps {
 export function SaveButton({ onClick }: SaveButtonProps) {
   const { t } = useTranslation()
   return (
-    <motion.button
-      className={styles.btnSave}
-      onClick={onClick}
-      whileTap={{ scale: 0.96 }}
-    >
+    <motion.button className={styles.btnSave} onClick={onClick} whileTap={{ scale: 0.96 }}>
       {t('popup.save')}
     </motion.button>
   )

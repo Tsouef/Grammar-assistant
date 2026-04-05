@@ -1,14 +1,19 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { createGrammarChecker } from './grammar'
+import { sendBackgroundMessage } from './messaging'
 
-const mockSendMessage = vi.fn()
+vi.mock('./messaging', () => ({
+  sendBackgroundMessage: vi.fn(),
+}))
+
+const mockSend = vi.mocked(sendBackgroundMessage)
 
 beforeEach(() => {
   vi.useFakeTimers()
   vi.stubGlobal('chrome', {
-    runtime: { id: 'test-extension-id', sendMessage: mockSendMessage, lastError: null },
+    runtime: { id: 'test-extension-id' },
   })
-  mockSendMessage.mockReset()
+  mockSend.mockReset()
 })
 
 afterEach(() => {
@@ -17,40 +22,39 @@ afterEach(() => {
 })
 
 describe('createGrammarChecker', () => {
-  it('does not call sendMessage before 600ms', () => {
-    const { check } = createGrammarChecker('en-US', vi.fn(), vi.fn())
+  it('does not call sendBackgroundMessage before 600ms', () => {
+    const { check } = createGrammarChecker('en-US', 'en', vi.fn(), vi.fn())
     check('Hello world')
     vi.advanceTimersByTime(599)
-    expect(mockSendMessage).not.toHaveBeenCalled()
+    expect(mockSend).not.toHaveBeenCalled()
   })
 
-  it('calls sendMessage after 600ms debounce', () => {
-    mockSendMessage.mockImplementation((_msg: unknown, cb: (r: unknown) => void) => cb({ errors: [] }))
-    const { check } = createGrammarChecker('en-US', vi.fn(), vi.fn())
+  it('calls sendBackgroundMessage after 600ms debounce', async () => {
+    mockSend.mockResolvedValue({ errors: [] })
+    const { check } = createGrammarChecker('en-US', 'en', vi.fn(), vi.fn())
     check('Hello world')
-    vi.advanceTimersByTime(600)
-    expect(mockSendMessage).toHaveBeenCalledWith(
-      { type: 'CHECK_GRAMMAR', text: 'Hello world', language: 'en-US' },
-      expect.any(Function)
-    )
+    await vi.advanceTimersByTimeAsync(600)
+    expect(mockSend).toHaveBeenCalledWith({
+      type: 'CHECK_GRAMMAR',
+      text: 'Hello world',
+      language: 'en-US',
+      uiLanguage: 'en',
+    })
   })
 
-  it('resets timer on rapid input — only sends once', () => {
-    mockSendMessage.mockImplementation((_msg: unknown, cb: (r: unknown) => void) => cb({ errors: [] }))
-    const { check } = createGrammarChecker('en-US', vi.fn(), vi.fn())
+  it('resets timer on rapid input — only sends once', async () => {
+    mockSend.mockResolvedValue({ errors: [] })
+    const { check } = createGrammarChecker('en-US', 'en', vi.fn(), vi.fn())
     check('H')
     vi.advanceTimersByTime(300)
     check('He')
     vi.advanceTimersByTime(300)
     check('Hello')
     vi.advanceTimersByTime(300)
-    expect(mockSendMessage).not.toHaveBeenCalled()
-    vi.advanceTimersByTime(300)
-    expect(mockSendMessage).toHaveBeenCalledTimes(1)
-    expect(mockSendMessage).toHaveBeenCalledWith(
-      expect.objectContaining({ text: 'Hello' }),
-      expect.any(Function)
-    )
+    expect(mockSend).not.toHaveBeenCalled()
+    await vi.advanceTimersByTimeAsync(300)
+    expect(mockSend).toHaveBeenCalledTimes(1)
+    expect(mockSend).toHaveBeenCalledWith(expect.objectContaining({ text: 'Hello' }))
   })
 
   it('calls onResults with parsed errors AND the original text', async () => {
@@ -58,8 +62,8 @@ describe('createGrammarChecker', () => {
     const errors = [
       { original: 'are', replacement: 'is', message: 'SVA', context: 'data are wrong' },
     ]
-    mockSendMessage.mockImplementation((_msg: unknown, cb: (r: unknown) => void) => cb({ errors }))
-    const { check } = createGrammarChecker('en-US', onResults, vi.fn())
+    mockSend.mockResolvedValue({ errors })
+    const { check } = createGrammarChecker('en-US', 'en', onResults, vi.fn())
     check('This are wrong')
     await vi.advanceTimersByTimeAsync(600)
     expect(onResults).toHaveBeenCalledWith(errors, 'This are wrong')
@@ -67,43 +71,38 @@ describe('createGrammarChecker', () => {
 
   it('calls onResults with empty array for blank text without sending', () => {
     const onResults = vi.fn()
-    const { check } = createGrammarChecker('en-US', onResults, vi.fn())
+    const { check } = createGrammarChecker('en-US', 'en', onResults, vi.fn())
     check('   ')
     vi.advanceTimersByTime(600)
-    expect(mockSendMessage).not.toHaveBeenCalled()
+    expect(mockSend).not.toHaveBeenCalled()
     expect(onResults).toHaveBeenCalledWith([], '   ')
   })
 
-  it('calls onError with "Request timed out" if sendMessage never responds within 20s', async () => {
+  it('calls onError with "Request timed out" if sendBackgroundMessage rejects', async () => {
     const onError = vi.fn()
-    // sendMessage never calls its callback — simulates a hanging request
-    mockSendMessage.mockImplementation(() => { /* no-op */ })
-    const { check } = createGrammarChecker('en-US', vi.fn(), onError)
+    mockSend.mockRejectedValue(new Error('Request timed out'))
+    const { check } = createGrammarChecker('en-US', 'en', vi.fn(), onError)
     check('Hello world')
-    await vi.advanceTimersByTimeAsync(600)  // debounce fires, sendMessage called
-    expect(mockSendMessage).toHaveBeenCalledTimes(1)
-    expect(onError).not.toHaveBeenCalled()
-    await vi.advanceTimersByTimeAsync(20000) // 20s timeout fires
+    await vi.advanceTimersByTimeAsync(600)
     expect(onError).toHaveBeenCalledWith('Request timed out')
   })
 
   it('applies 5s backoff after RATE_LIMIT error', async () => {
-    mockSendMessage.mockImplementation((_msg: unknown, cb: (r: unknown) => void) =>
-      cb({ error: 'RATE_LIMIT' })
-    )
-    const { check } = createGrammarChecker('en-US', vi.fn(), vi.fn())
+    mockSend.mockRejectedValueOnce(new Error('RATE_LIMIT'))
+    const onError = vi.fn()
+    const { check } = createGrammarChecker('en-US', 'en', vi.fn(), onError)
     check('text')
-    await vi.advanceTimersByTimeAsync(600) // flush debounce + Promise rejection + backoffUntil set
-    mockSendMessage.mockReset()
+    await vi.advanceTimersByTimeAsync(600)
+    expect(onError).toHaveBeenCalledWith('Rate limit — please wait a moment')
 
-    mockSendMessage.mockImplementation((_msg: unknown, cb: (r: unknown) => void) => cb({ errors: [] }))
+    mockSend.mockResolvedValue({ errors: [] })
     check('text again')
     vi.advanceTimersByTime(600)
-    expect(mockSendMessage).not.toHaveBeenCalled()
+    expect(mockSend).toHaveBeenCalledTimes(1) // still just the first call
 
     vi.advanceTimersByTime(4400 + 600)
     check('text after backoff')
-    vi.advanceTimersByTime(600)
-    expect(mockSendMessage).toHaveBeenCalledTimes(1)
+    await vi.advanceTimersByTimeAsync(600)
+    expect(mockSend).toHaveBeenCalledTimes(2)
   })
 })

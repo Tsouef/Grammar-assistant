@@ -21,7 +21,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-color 150ms ease, color 150ms ease;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease;
   padding: 0;
 }
 

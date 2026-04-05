@@ -36,7 +36,9 @@ describe('ProviderSection — provider dropdown', () => {
   it('calls onProviderChange when user picks a different provider', () => {
     const onProviderChange = vi.fn()
     renderSection({ onProviderChange })
-    fireEvent.change(screen.getByRole('combobox', { name: /provider/i }), { target: { value: 'claude' } })
+    fireEvent.change(screen.getByRole('combobox', { name: /provider/i }), {
+      target: { value: 'claude' },
+    })
     expect(onProviderChange).toHaveBeenCalledWith('claude')
   })
 })

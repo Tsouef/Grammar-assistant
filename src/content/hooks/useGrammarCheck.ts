@@ -11,7 +11,13 @@ interface UseGrammarCheckOptions {
   delay?: number
 }
 
-export function useGrammarCheck({ language, uiLanguage, onResults, onError, delay = 1000 }: UseGrammarCheckOptions) {
+export function useGrammarCheck({
+  language,
+  uiLanguage,
+  onResults,
+  onError,
+  delay = 1000,
+}: UseGrammarCheckOptions) {
   const onResultsRef = useLatestRef(onResults)
   const onErrorRef = useLatestRef(onError)
   // checkerRef holds the current debounced checker instance.
@@ -25,7 +31,7 @@ export function useGrammarCheck({ language, uiLanguage, onResults, onError, dela
       uiLanguage,
       (errors, text) => onResultsRef.current(errors, text),
       (msg) => onErrorRef.current(msg),
-      delay,
+      delay
     )
     return () => checkerRef.current?.cancel()
   }, [language, uiLanguage, delay, onResultsRef, onErrorRef])

@@ -19,7 +19,9 @@ export function TranslateBar({ onRequestTranslate }: TranslateBarProps) {
         onChange={(e) => setTargetLang(e.target.value)}
       >
         {LANGUAGE_OPTIONS.map(({ code, label }) => (
-          <option key={code} value={code}>{label}</option>
+          <option key={code} value={code}>
+            {label}
+          </option>
         ))}
       </select>
       <button className="btn-translate" onClick={() => onRequestTranslate(targetLang)}>

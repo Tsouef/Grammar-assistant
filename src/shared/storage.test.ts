@@ -21,7 +21,12 @@ beforeEach(() => {
 
 describe('getConfig — namespaced key', () => {
   it('returns merged config from namespaced key', async () => {
-    const stored = { activeProvider: 'claude', providers: [{ id: 'claude', apiKey: 'sk-test' }], language: 'fr-FR', disabledDomains: [] }
+    const stored = {
+      activeProvider: 'claude',
+      providers: [{ id: 'claude', apiKey: 'sk-test' }],
+      language: 'fr-FR',
+      disabledDomains: [],
+    }
     mockStorage.get.mockResolvedValue({ [STORAGE_KEY]: stored })
     const config = await getConfig()
     expect(config.activeProvider).toBe('claude')
@@ -39,38 +44,41 @@ describe('getConfig — namespaced key', () => {
 
 describe('getConfig — migration from flat keys', () => {
   it('migrates flat keys when namespaced key is absent', async () => {
-    const flat = { activeProvider: 'claude', providers: [{ id: 'claude', apiKey: 'sk-ant' }], language: 'auto', disabledDomains: [] }
+    const flat = {
+      activeProvider: 'claude',
+      providers: [{ id: 'claude', apiKey: 'sk-ant' }],
+      language: 'auto',
+      disabledDomains: [],
+    }
     mockStorage.get
-      .mockResolvedValueOnce({})        // get(STORAGE_KEY) → absent
-      .mockResolvedValueOnce(flat)      // get(null) → flat keys
+      .mockResolvedValueOnce({}) // get(STORAGE_KEY) → absent
+      .mockResolvedValueOnce(flat) // get(null) → flat keys
     const config = await getConfig()
     expect(config.activeProvider).toBe('claude')
-    expect(mockStorage.set).toHaveBeenCalledWith({ [STORAGE_KEY]: expect.objectContaining({ activeProvider: 'claude' }) })
+    expect(mockStorage.set).toHaveBeenCalledWith({
+      [STORAGE_KEY]: expect.objectContaining({ activeProvider: 'claude' }),
+    })
   })
 
   it('removes stale flat keys after migration', async () => {
     const flat = { activeProvider: 'claude', providers: [], language: 'auto', disabledDomains: [] }
-    mockStorage.get
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce(flat)
+    mockStorage.get.mockResolvedValueOnce({}).mockResolvedValueOnce(flat)
     await getConfig()
-    expect(mockStorage.remove).toHaveBeenCalledWith(expect.arrayContaining(['activeProvider', 'providers', 'language', 'disabledDomains']))
+    expect(mockStorage.remove).toHaveBeenCalledWith(
+      expect.arrayContaining(['activeProvider', 'providers', 'language', 'disabledDomains'])
+    )
   })
 
   it('does not include extraneous keys in migrated config', async () => {
     const flat = { activeProvider: 'claude', randomChromeKey: 'garbage', someOtherKey: 42 }
-    mockStorage.get
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce(flat)
+    mockStorage.get.mockResolvedValueOnce({}).mockResolvedValueOnce(flat)
     const config = await getConfig()
     expect(config).not.toHaveProperty('randomChromeKey')
     expect(config).not.toHaveProperty('someOtherKey')
   })
 
   it('does not call remove when no flat keys are present', async () => {
-    mockStorage.get
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({ someUnrelatedKey: 'value' })
+    mockStorage.get.mockResolvedValueOnce({}).mockResolvedValueOnce({ someUnrelatedKey: 'value' })
     await getConfig()
     expect(mockStorage.remove).not.toHaveBeenCalled()
   })
@@ -78,9 +86,7 @@ describe('getConfig — migration from flat keys', () => {
 
 describe('getConfig — default config', () => {
   it('returns DEFAULT_CONFIG when nothing is stored', async () => {
-    mockStorage.get
-      .mockResolvedValueOnce({})
-      .mockResolvedValueOnce({})
+    mockStorage.get.mockResolvedValueOnce({}).mockResolvedValueOnce({})
     const config = await getConfig()
     expect(config).toEqual(DEFAULT_CONFIG)
   })
@@ -90,6 +96,9 @@ describe('getConfig — default config', () => {
     const config = await getConfig()
     expect(config).toEqual(DEFAULT_CONFIG)
     // Restore
-    vi.stubGlobal('chrome', { runtime: { id: 'test-extension-id' }, storage: { local: mockStorage } })
+    vi.stubGlobal('chrome', {
+      runtime: { id: 'test-extension-id' },
+      storage: { local: mockStorage },
+    })
   })
 })

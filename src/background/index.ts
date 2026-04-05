@@ -3,15 +3,13 @@ import { fetchOllamaModels } from './providers/ollama'
 import { getConfig } from '../shared/storage'
 import type { BackgroundMessage, BackgroundResponse } from '../shared/types'
 
-chrome.runtime.onMessage.addListener(
-  (message: BackgroundMessage, sender, sendResponse) => {
-    if (sender.id !== chrome.runtime.id) return
-    handleMessage(message)
-      .then(sendResponse)
-      .catch((err: Error) => sendResponse({ error: err.message }))
-    return true
-  }
-)
+chrome.runtime.onMessage.addListener((message: BackgroundMessage, sender, sendResponse) => {
+  if (sender.id !== chrome.runtime.id) return
+  handleMessage(message)
+    .then(sendResponse)
+    .catch((err: Error) => sendResponse({ error: err.message }))
+  return true
+})
 
 async function handleMessage(message: BackgroundMessage): Promise<BackgroundResponse> {
   if (message.type === 'GET_OLLAMA_MODELS') {
@@ -31,7 +29,12 @@ async function handleMessage(message: BackgroundMessage): Promise<BackgroundResp
     return { errors }
   }
   if (message.type === 'AI_REWRITE') {
-    const rewritten = await provider.rewrite(message.text, message.selection, message.language, message.tone)
+    const rewritten = await provider.rewrite(
+      message.text,
+      message.selection,
+      message.language,
+      message.tone
+    )
     return { rewritten }
   }
   if (message.type === 'TRANSLATE') {

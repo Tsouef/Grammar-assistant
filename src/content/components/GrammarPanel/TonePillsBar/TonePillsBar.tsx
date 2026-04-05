@@ -12,12 +12,7 @@ export function TonePillsBar({ onSelectTone }: TonePillsBarProps) {
   return (
     <div className="tone-bar">
       {TONES.map((tone) => (
-        <button
-          key={tone}
-          className="btn-tone"
-          data-tone={tone}
-          onClick={() => onSelectTone(tone)}
-        >
+        <button key={tone} className="btn-tone" data-tone={tone} onClick={() => onSelectTone(tone)}>
           {t(`tone.${tone}`)}
         </button>
       ))}

@@ -1,6 +1,12 @@
 import type { GrammarError, TonePreset, UiLocale } from '../../shared/types'
 import type { AIProvider, GeminiApiResponse } from './types'
-import { buildGrammarPrompt, buildRewritePrompt, buildToneRewritePrompt, buildTranslatePrompt, parseGrammarErrors } from './prompts'
+import {
+  buildGrammarPrompt,
+  buildRewritePrompt,
+  buildToneRewritePrompt,
+  buildTranslatePrompt,
+  parseGrammarErrors,
+} from './prompts'
 import { REQUEST_TIMEOUT_MS } from '../../shared/constants'
 
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models'
@@ -29,7 +35,8 @@ async function callGemini(prompt: string, apiKey: string, model: string): Promis
 
   if (!response.ok) {
     console.error(`[Gemini] ${response.status}`)
-    if (response.status === 400 || response.status === 403) throw new Error('Invalid API key for Gemini')
+    if (response.status === 400 || response.status === 403)
+      throw new Error('Invalid API key for Gemini')
     if (response.status === 429) throw new Error('RATE_LIMIT')
     throw new Error(`Gemini API error: ${response.status}`)
   }
@@ -47,12 +54,25 @@ export class GeminiProvider implements AIProvider {
     private readonly model: string = 'gemini-2.5-flash-lite'
   ) {}
 
-  async checkGrammar(text: string, language: string, uiLanguage: UiLocale): Promise<GrammarError[]> {
-    const raw = await callGemini(buildGrammarPrompt(text, language, uiLanguage), this.apiKey, this.model)
+  async checkGrammar(
+    text: string,
+    language: string,
+    uiLanguage: UiLocale
+  ): Promise<GrammarError[]> {
+    const raw = await callGemini(
+      buildGrammarPrompt(text, language, uiLanguage),
+      this.apiKey,
+      this.model
+    )
     return parseGrammarErrors(raw)
   }
 
-  async rewrite(text: string, selection: string | undefined, language: string, tone?: TonePreset): Promise<string> {
+  async rewrite(
+    text: string,
+    selection: string | undefined,
+    language: string,
+    tone?: TonePreset
+  ): Promise<string> {
     const prompt = tone
       ? buildToneRewritePrompt(text, tone, language, selection)
       : buildRewritePrompt(text, selection, language)

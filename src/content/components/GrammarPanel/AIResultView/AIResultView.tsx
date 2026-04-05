@@ -17,8 +17,12 @@ export function AIResultView({
     <>
       <div className="ai-result">{text}</div>
       <div className="actions">
-        <button className="btn-primary" onClick={onPrimary}>{primaryLabel}</button>
-        <button className="btn-secondary" onClick={onSecondary}>{secondaryLabel}</button>
+        <button className="btn-primary" onClick={onPrimary}>
+          {primaryLabel}
+        </button>
+        <button className="btn-secondary" onClick={onSecondary}>
+          {secondaryLabel}
+        </button>
       </div>
     </>
   )

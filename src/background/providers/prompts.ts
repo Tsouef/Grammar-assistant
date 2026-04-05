@@ -1,12 +1,12 @@
 import { GrammarError, TonePreset, UiLocale } from '../../shared/types'
 
 const EXPLANATION_LANG_NAMES: Record<UiLocale, string> = {
-  'en':    'English',
+  en: 'English',
   'en-GB': 'English',
-  'fr':    'French',
-  'de':    'German',
-  'es':    'Spanish',
-  'nl':    'Dutch',
+  fr: 'French',
+  de: 'German',
+  es: 'Spanish',
+  nl: 'Dutch',
 }
 
 function buildGrammarLangInstruction(language: string): string {
@@ -21,7 +21,11 @@ function buildRewriteLangInstruction(language: string): string {
     : `Rewrite the following text in ${language}.`
 }
 
-export function buildGrammarPrompt(text: string, language: string, uiLanguage: UiLocale = 'en'): string {
+export function buildGrammarPrompt(
+  text: string,
+  language: string,
+  uiLanguage: UiLocale = 'en'
+): string {
   const langInstruction = buildGrammarLangInstruction(language)
   const explanationLang = EXPLANATION_LANG_NAMES[uiLanguage]
   return `You are a strict grammar and spelling checker. ${langInstruction}
@@ -92,11 +96,12 @@ export function buildTranslatePrompt(text: string, targetLanguage: string): stri
 }
 
 const TONE_INSTRUCTIONS: Record<TonePreset, string> = {
-  shorter:      'Rewrite more concisely, keeping the same meaning.',
-  formal:       'Rewrite in a more formal, professional tone.',
-  direct:       'Rewrite more directly, remove any hedging or filler.',
-  technical:    'Rewrite using precise technical language.',
-  'grammar-fix': 'Fix every grammar, spelling, and word-choice error. Do not change the style, tone, structure, or meaning — only correct mistakes.',
+  shorter: 'Rewrite more concisely, keeping the same meaning.',
+  formal: 'Rewrite in a more formal, professional tone.',
+  direct: 'Rewrite more directly, remove any hedging or filler.',
+  technical: 'Rewrite using precise technical language.',
+  'grammar-fix':
+    'Fix every grammar, spelling, and word-choice error. Do not change the style, tone, structure, or meaning — only correct mistakes.',
 }
 
 export function buildToneRewritePrompt(

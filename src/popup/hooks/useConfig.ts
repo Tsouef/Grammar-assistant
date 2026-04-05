@@ -7,7 +7,9 @@ export function useConfig() {
   const [config, setConfig] = useState<Config | null>(null)
 
   useEffect(() => {
-    getConfig().then(setConfig).catch(() => setConfig(DEFAULT_CONFIG))
+    getConfig()
+      .then(setConfig)
+      .catch(() => setConfig(DEFAULT_CONFIG))
 
     function handleStorageChange() {
       getConfig()

@@ -10,7 +10,12 @@ interface PanelHeaderProps {
   onOpenSettings?: () => void
 }
 
-export function PanelHeader({ state, matchedErrorCount, onRequestAI, onOpenSettings }: PanelHeaderProps) {
+export function PanelHeader({
+  state,
+  matchedErrorCount,
+  onRequestAI,
+  onOpenSettings,
+}: PanelHeaderProps) {
   const { t } = useTranslation()
 
   function renderStatus() {
@@ -28,14 +33,14 @@ export function PanelHeader({ state, matchedErrorCount, onRequestAI, onOpenSetti
       const msg = isNoProvider
         ? t('panel.configureProvider')
         : state.message.includes('Invalid API key')
-        ? state.message
-        : state.message.includes('unreachable')
-        ? t('error.serviceUnreachable')
-        : state.message.includes('timed out')
-        ? t('error.requestTimedOut')
-        : state.message.includes('Rate limit')
-        ? t('error.rateLimited')
-        : state.message
+          ? state.message
+          : state.message.includes('unreachable')
+            ? t('error.serviceUnreachable')
+            : state.message.includes('timed out')
+              ? t('error.requestTimedOut')
+              : state.message.includes('Rate limit')
+                ? t('error.rateLimited')
+                : state.message
       return (
         <span className="status">
           <span className="status-icon error">⚠</span>

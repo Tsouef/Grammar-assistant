@@ -49,7 +49,10 @@ describe('applyAI', () => {
     const el = makeContentEditable('text')
     const focusSpy = el.focus.bind(el)
     let focused = false
-    el.focus = () => { focused = true; focusSpy() }
+    el.focus = () => {
+      focused = true
+      focusSpy()
+    }
     applyAI(el, 'new text', false)
     expect(focused).toBe(true)
   })
