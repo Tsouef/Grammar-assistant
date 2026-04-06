@@ -6,6 +6,9 @@ export const EXTENSION_INVALIDATED_MSG = 'Extension updated — please refresh t
 export const REQUEST_TIMEOUT_MS = 45000
 export const RATE_LIMIT_BACKOFF_MS = 5000
 export const MAX_GRAMMAR_TEXT_LENGTH = 3000
+export const GRAMMAR_DEBOUNCE_MS = 1500
+export const GRAMMAR_MIN_DIFF_CHARS = 3
+export const GRAMMAR_CACHE_SIZE = 5
 
 export function isExtensionValid(): boolean {
   return typeof chrome !== 'undefined' && !!chrome.runtime?.id
