@@ -22,7 +22,7 @@ Text language support: English (US / UK), French, German, Spanish, Dutch — or 
 
 The extension UI and error explanations adapt to your chosen interface language — independently of the language you are writing in. Set your native language once in the popup; the AI will explain grammar mistakes in that language even if the text you are correcting is in a different one.
 
-Supported interface languages: English, English (UK), French, German, Spanish, Dutch.
+Supported interface languages: English, English (UK), French, German, Spanish, Dutch, Portuguese (PT), Portuguese (BR), Chinese Simplified, Arabic, Persian, Japanese.
 
 ### AI rewrite
 
@@ -195,7 +195,7 @@ The extension uses `activeTab` + `scripting` for baseline access, and `optional_
 
 - **React 19** + TypeScript — panel UI and popup
 - **Radix UI** — accessible primitives (Dialog, ToggleGroup, Toast) with built-in ARIA
-- **i18next** + react-i18next — runtime i18n with 6 locales
+- **i18next** + react-i18next — runtime i18n with 12 locales (RTL support for Arabic and Persian)
 - **@floating-ui/dom** — collision-aware panel positioning (flip + shift)
 - **Shadow DOM** — the panel is fully isolated from host page styles
 - **Zod** — runtime schema validation for AI grammar responses
@@ -222,7 +222,7 @@ src/
                       # ThemeSection, DisabledSitesSection, SitePermissionSection…
   shared/
     components/       # VisuallyHidden (a11y sr-only utility)
-    i18n/             # i18next setup + locale JSON files (en, fr, de, es, nl, en-GB)
+    i18n/             # i18next setup + locale JSON files (en, en-GB, fr, de, es, nl, zh, ar, fa, ja, pt-PT, pt-BR)
     pii.ts            # PII anonymization (email, phone) before AI calls
                       # Types, constants, storage, config defaults, provider models
 ```
