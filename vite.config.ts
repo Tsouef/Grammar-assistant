@@ -16,6 +16,7 @@ export default defineConfig({
           if (manifest.background && 'service_worker' in manifest.background) {
             const sw = manifest.background.service_worker
             delete manifest.background.service_worker
+            delete manifest.background.type
             manifest.background.scripts = [sw]
           }
         } else {

@@ -5,7 +5,7 @@ import { useConfig } from './hooks/useConfig'
 import type { Config, ProviderId, UiLocale, UiTheme } from '../shared/types'
 import { EASE_OUT, SAVED_VISIBLE_DURATION_MS } from '../shared/constants'
 import { PROVIDER_IDS } from '../shared/models'
-import i18n from '../shared/i18n/i18n'
+import i18n, { RTL_LOCALES } from '../shared/i18n/i18n'
 import styles from './App.module.css'
 import { ProviderSection } from './components/ProviderSection/ProviderSection'
 import type { PerProviderState } from './components/ProviderSection/ProviderSection'
@@ -76,6 +76,11 @@ function AppForm({ config, saveConfig }: AppFormProps) {
   useEffect(() => {
     i18n.changeLanguage(uiLanguage)
   }, [uiLanguage])
+
+  useEffect(() => {
+    document.documentElement.dir = RTL_LOCALES.has(uiLanguage) ? 'rtl' : 'ltr'
+  }, [uiLanguage])
+
   const [ollamaModels, setOllamaModels] = useState<string[]>([])
   const [ollamaModelsStatus, setOllamaModelsStatus] = useState<'idle' | 'loading' | 'error'>(
     config.activeProvider === 'ollama' ? 'loading' : 'idle'
@@ -142,16 +147,23 @@ function AppForm({ config, saveConfig }: AppFormProps) {
     setTrustedDomains(newDomains)
     // Await so the config is flushed before the content script reads it
     await saveConfig({ ...config, trustedDomains: newDomains })
-    // Inject immediately so the user doesn't have to reload the page
+    // Inject immediately so the user doesn't have to reload the page.
+    // If injection fails (e.g. Firefox rejects executeScript on existing tabs),
+    // fall back to a full tab reload so the content script loads naturally.
     try {
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-      if (tab?.id)
-        await chrome.scripting.executeScript({
-          target: { tabId: tab.id },
-          files: ['src/content/index.js'],
-        })
+      if (tab?.id) {
+        try {
+          await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['src/content/index.js'],
+          })
+        } catch {
+          await chrome.tabs.reload(tab.id)
+        }
+      }
     } catch {
-      // Already injected or tab not injectable
+      // Tab not queryable — ignore
     }
   }
 

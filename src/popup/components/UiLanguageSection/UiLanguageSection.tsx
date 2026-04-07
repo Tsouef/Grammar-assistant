@@ -8,6 +8,12 @@ const UI_LANGUAGE_OPTIONS: { code: UiLocale; label: string }[] = [
   { code: 'de', label: 'Deutsch' },
   { code: 'es', label: 'Español' },
   { code: 'nl', label: 'Nederlands' },
+  { code: 'zh', label: '中文（简体）' },
+  { code: 'ar', label: 'العربية' },
+  { code: 'fa', label: 'فارسی' },
+  { code: 'ja', label: '日本語' },
+  { code: 'pt-PT', label: 'Português (Portugal)' },
+  { code: 'pt-BR', label: 'Português (Brasil)' },
 ]
 
 interface UiLanguageSectionProps {

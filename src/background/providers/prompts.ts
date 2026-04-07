@@ -8,6 +8,12 @@ const EXPLANATION_LANG_NAMES: Record<UiLocale, string> = {
   de: 'German',
   es: 'Spanish',
   nl: 'Dutch',
+  zh: 'Chinese',
+  ar: 'Arabic',
+  fa: 'Persian',
+  ja: 'Japanese',
+  'pt-PT': 'Portuguese',
+  'pt-BR': 'Portuguese',
 }
 
 // Per-locale translations of the example explanations.
@@ -37,6 +43,30 @@ const EXAMPLE_MESSAGES: Record<UiLocale, [string, string]> = {
   nl: [
     "Het onderwerp 'I' vereist de basisvorm van het werkwoord. 'Has' is de derde persoon enkelvoud; gebruik in plaats daarvan 'have'.",
     "Gebruik 'an' voor woorden die beginnen met een klinkerklank. 'Apple' begint met de /æ/-klank, dus 'an' is vereist.",
+  ],
+  zh: [
+    "主语'I'需要动词的基本形式。'Has'是第三人称单数形式；应改用'have'。",
+    "在以元音开头的单词前使用'an'。'Apple'以/æ/元音开头，因此需要'an'。",
+  ],
+  ar: [
+    "الموضوع 'I' يتطلب الشكل الأساسي للفعل. 'Has' هو شكل المضارع الغائب المفرد؛ استخدم 'have' بدلاً من ذلك.",
+    "استخدم 'an' قبل الكلمات التي تبدأ بصوت حرف متحرك. 'Apple' يبدأ بالصوت /æ/، لذا يُطلب 'an'.",
+  ],
+  fa: [
+    "فاعل 'I' نیاز به فعل اساسی دارد. 'Has' شکل سوم شخص تکی است؛ به جای آن 'have' استفاده کنید.",
+    "قبل از کلماتی که با صدای مصوت شروع می‌شوند 'an' را بکار بگیرید. 'Apple' با صدای /æ/ شروع می‌شود، بنابراین 'an' الزامی است.",
+  ],
+  ja: [
+    "主語'I'は動詞の基本形を必要とします。'Has'は三人称単数形です。代わりに'have'を使用してください。",
+    "'an'は母音で始まる単語の前に使用します。'Apple'は/æ/の母音で始まるため、'an'が必要です。",
+  ],
+  'pt-PT': [
+    "O sujeito 'I' exige a forma básica do verbo. 'Has' é a forma de terceira pessoa do singular; use 'have' em seu lugar.",
+    "Use 'an' antes de palavras que começam com som vocálico. 'Apple' começa com o som /æ/, portanto 'an' é necessário.",
+  ],
+  'pt-BR': [
+    "O sujeito 'I' exige a forma básica do verbo. 'Has' é a forma de terceira pessoa do singular; use 'have' em seu lugar.",
+    "Use 'an' antes de palavras que começam com som vocálico. 'Apple' começa com o som /æ/, portanto 'an' é necessário.",
   ],
 }
 

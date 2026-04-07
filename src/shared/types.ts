@@ -1,6 +1,18 @@
 export type ProviderId = 'gemini' | 'claude' | 'openai' | 'ollama' | 'mistral'
 
-export type UiLocale = 'en' | 'en-GB' | 'fr' | 'de' | 'es' | 'nl'
+export type UiLocale =
+  | 'en'
+  | 'en-GB'
+  | 'fr'
+  | 'de'
+  | 'es'
+  | 'nl'
+  | 'zh'
+  | 'ar'
+  | 'fa'
+  | 'ja'
+  | 'pt-PT'
+  | 'pt-BR'
 
 export type UiTheme = 'dark' | 'light'
 
@@ -14,7 +26,20 @@ export interface ProviderConfig {
 export interface Config {
   activeProvider: ProviderId
   providers: ProviderConfig[]
-  language: 'auto' | 'en-US' | 'en-GB' | 'fr-FR' | 'de-DE' | 'es-ES' | 'nl-NL'
+  language:
+    | 'auto'
+    | 'en-US'
+    | 'en-GB'
+    | 'fr-FR'
+    | 'de-DE'
+    | 'es-ES'
+    | 'nl-NL'
+    | 'zh-CN'
+    | 'ar'
+    | 'fa'
+    | 'ja'
+    | 'pt-PT'
+    | 'pt-BR'
   uiLanguage: UiLocale
   uiTheme: UiTheme
   disabledDomains: string[]
