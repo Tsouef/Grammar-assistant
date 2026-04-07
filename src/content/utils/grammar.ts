@@ -107,9 +107,10 @@ export function createGrammarChecker(
 
       onStart?.()
       const thisRequestId = ++requestId
+      const { anonymized, restore } = anonymizePii(text)
       const message: CheckGrammarMessage = {
         type: 'CHECK_GRAMMAR',
-        text: anonymizePii(text),
+        text: anonymized,
         language,
         uiLanguage,
       }
@@ -117,9 +118,15 @@ export function createGrammarChecker(
       sendBackgroundMessage<CheckGrammarResponse>(message)
         .then((response) => {
           if (thisRequestId !== requestId) return
+          const errors = response.errors.map((e) => ({
+            ...e,
+            context: restore(e.context),
+            original: restore(e.original),
+            replacement: restore(e.replacement),
+          }))
           lastCheckedText = text
-          cacheSet(text, response.errors)
-          onResults(response.errors, text)
+          cacheSet(text, errors)
+          onResults(errors, text)
         })
         .catch((err: unknown) => {
           if (thisRequestId !== requestId) return

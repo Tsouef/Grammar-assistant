@@ -11,7 +11,7 @@ export function requestAIRewrite(
   onError: (error: string) => void,
   tone?: TonePreset
 ): void {
-  const text = field.textContent ?? ''
+  const text = field instanceof HTMLTextAreaElement ? field.value : (field.textContent ?? '')
   if (!text.trim()) {
     onError(i18n.t('error.nothingToRewrite'))
     return
@@ -35,16 +35,18 @@ export function requestAIRewrite(
 
   const isSelection = selectionText !== undefined
 
+  const { anonymized: anonymizedText, restore: restoreText } = anonymizePii(text)
+  const selectionAnon = selectionText ? anonymizePii(selectionText) : null
   const message: AIRewriteMessage = {
     type: 'AI_REWRITE',
-    text: anonymizePii(text),
-    selection: selectionText ? anonymizePii(selectionText) : undefined,
+    text: anonymizedText,
+    selection: selectionAnon?.anonymized,
     language,
     tone,
   }
 
   sendBackgroundMessage<AIRewriteResponse>(message)
-    .then((response) => onResult(response.rewritten, isSelection, savedRange))
+    .then((response) => onResult(restoreText(response.rewritten), isSelection, savedRange))
     .catch((err) => {
       const msg = toErrorMessage(err)
       onError(msg === 'RATE_LIMIT' ? i18n.t('error.rateLimited') : msg)

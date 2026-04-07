@@ -12,6 +12,11 @@ import { toErrorMessage, MAX_GRAMMAR_TEXT_LENGTH } from '../../shared/constants'
 import i18n from '../../shared/i18n/i18n'
 import { anonymizePii } from '../../shared/pii'
 
+function getFieldText(field: HTMLElement): string {
+  if (field instanceof HTMLTextAreaElement) return field.value
+  return field.textContent ?? ''
+}
+
 export function usePanelOrchestration(config: Config) {
   const panelRef = useRef<GrammarPanelHandle>(null)
   const panelInteractingRef = useRef(false)
@@ -53,7 +58,7 @@ export function usePanelOrchestration(config: Config) {
       setPanelField(field)
       setIsPanelOpen(true)
       panelState.setChecking()
-      grammarCheck(field.textContent ?? '', true)
+      grammarCheck(getFieldText(field), true)
 
       // Wire input listener for live re-checking (skipped in manual-only mode)
       if (inputListenerRef.current) {
@@ -62,7 +67,7 @@ export function usePanelOrchestration(config: Config) {
       if (!config.manualOnly) {
         inputListenerRef.current = () => {
           setIsRechecking(true)
-          grammarCheck(field.textContent ?? '')
+          grammarCheck(getFieldText(field))
         }
         field.addEventListener('input', inputListenerRef.current)
       }
@@ -138,22 +143,23 @@ export function usePanelOrchestration(config: Config) {
     (targetLang: string) => {
       const field = panelFieldRef.current
       if (!field) return
-      const text = field.textContent ?? ''
+      const text = getFieldText(field)
       if (text.length > MAX_GRAMMAR_TEXT_LENGTH) {
         panelState.setError(i18n.t('error.textTooLong', { max: MAX_GRAMMAR_TEXT_LENGTH }))
         return
       }
       panelState.setTranslating()
       const myId = ++translateRequestIdRef.current
+      const { anonymized, restore } = anonymizePii(text)
       const message: TranslateMessage = {
         type: 'TRANSLATE',
-        text: anonymizePii(text),
+        text: anonymized,
         targetLanguage: targetLang,
       }
       sendBackgroundMessage<TranslateResponse>(message)
         .then((response) => {
           if (myId !== translateRequestIdRef.current) return
-          panelState.setTranslateResult(response.translated)
+          panelState.setTranslateResult(restore(response.translated))
         })
         .catch((err) => {
           if (myId !== translateRequestIdRef.current) return

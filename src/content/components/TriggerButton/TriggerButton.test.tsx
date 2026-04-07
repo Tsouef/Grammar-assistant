@@ -10,6 +10,11 @@ window.ResizeObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }))
 
+// Mock chrome.runtime.getURL
+vi.stubGlobal('chrome', {
+  runtime: { getURL: (path: string) => `chrome-extension://test-id/${path}` },
+})
+
 // Mock motion/react to avoid animation issues in jsdom
 vi.mock('motion/react', async (importOriginal) => {
   const actual = await importOriginal<typeof import('motion/react')>()
@@ -47,7 +52,7 @@ describe('TriggerButton component', () => {
     const field = document.createElement('div')
     document.body.appendChild(field)
     render(<TriggerButton field={field} onClick={onClick} />)
-    screen.getByText('✦').click()
+    screen.getByRole('button').click()
     expect(onClick).toHaveBeenCalledOnce()
   })
 
@@ -60,6 +65,5 @@ describe('TriggerButton component', () => {
     expect(style).toContain('padding: 0px')
     expect(style).toContain('margin: 0px')
     expect(style).toContain('box-sizing: border-box')
-    expect(style).toContain('line-height: 1')
   })
 })

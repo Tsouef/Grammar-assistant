@@ -6,6 +6,7 @@ import { GrammarPanel } from './components/GrammarPanel/GrammarPanel'
 import type { Config } from '../shared/types'
 import { useStorageConfig } from '../shared/useStorageConfig'
 import i18n from '../shared/i18n/i18n'
+import { getSelectorForHostname } from './utils/field-detector'
 
 interface ContentAppProps {
   config: Config
@@ -36,8 +37,15 @@ export function ContentApp({ config: initialConfig }: ContentAppProps) {
   useEffect(() => {
     function handleCommand(message: { type?: string }) {
       if (message.type !== 'OPEN_PANEL') return
-      if (isPanelOpen || !activeField) return
-      openPanel(activeField)
+      if (isPanelOpen) return
+      const field =
+        activeField ??
+        (document.querySelector(
+          getSelectorForHostname(window.location.hostname)
+        ) as HTMLElement | null)
+      if (!field) return
+      field.focus()
+      openPanel(field)
     }
     try {
       chrome.runtime.onMessage.addListener(handleCommand)

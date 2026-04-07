@@ -71,11 +71,11 @@ describe('requestAIRewrite', () => {
   it('strips email from text before sending AI_REWRITE', async () => {
     mockSend.mockResolvedValue({ rewritten: 'cleaned' })
     requestAIRewrite(makeField('Write to admin@corp.com about the issue'), 'en', vi.fn(), vi.fn())
-    await vi.waitFor(() =>
-      expect(mockSend).toHaveBeenCalledWith(
-        expect.objectContaining({ text: 'Write to [EMAIL] about the issue' })
-      )
-    )
+    await vi.waitFor(() => expect(mockSend).toHaveBeenCalled())
+    const sentText = (mockSend.mock.calls[0][0] as { text: string }).text
+    expect(sentText).not.toContain('admin@corp.com')
+    expect(sentText).toContain('Write to')
+    expect(sentText).toContain('about the issue')
   })
 })
 

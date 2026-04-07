@@ -12,13 +12,22 @@ chrome.commands.onCommand.addListener(async (command) => {
   try {
     await chrome.tabs.sendMessage(tab.id, { type: 'OPEN_PANEL' })
   } catch {
-    // Content script not yet injected — inject it first, then retry
+    // Content script not yet injected — inject it first, then retry with backoff
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         files: ['src/content/index.js'],
       })
-      await chrome.tabs.sendMessage(tab.id, { type: 'OPEN_PANEL' })
+      // Wait for React to mount before sending the message
+      for (const delay of [100, 200, 400]) {
+        await new Promise((r) => setTimeout(r, delay))
+        try {
+          await chrome.tabs.sendMessage(tab.id, { type: 'OPEN_PANEL' })
+          break
+        } catch {
+          // Not ready yet — keep retrying
+        }
+      }
     } catch {
       // Tab not injectable (chrome:// pages, etc.) — silently ignore
     }

@@ -328,8 +328,9 @@ describe('createGrammarChecker', () => {
     const { check } = createGrammarChecker('en-US', 'en', vi.fn(), vi.fn(), 600)
     check('Email me at foo@bar.com please')
     await vi.advanceTimersByTimeAsync(600)
-    expect(mockSend).toHaveBeenCalledWith(
-      expect.objectContaining({ text: 'Email me at [EMAIL] please' })
-    )
+    const sentText = (mockSend.mock.calls[0][0] as { text: string }).text
+    expect(sentText).not.toContain('foo@bar.com')
+    expect(sentText).toContain('Email me at')
+    expect(sentText).toContain('please')
   })
 })
