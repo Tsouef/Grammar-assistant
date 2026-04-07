@@ -214,7 +214,7 @@ function AppForm({ config, saveConfig }: AppFormProps) {
   return (
     <MotionConfig reducedMotion="user">
       <h1 className={styles.heading}>
-        <span className={styles.logoIcon}>✦</span>
+        <img src="/icons/icon-16.png" alt="" className={styles.logoIcon} width={16} height={16} />
         {t('popup.heading')}
       </h1>
       <motion.div variants={containerVariants} initial="hidden" animate="visible">

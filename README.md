@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/icons/icon-128.png" alt="Plume AI" width="96" />
+</p>
+
 # Plume AI
 
 A browser extension (Chrome + Firefox) that brings AI-powered grammar checking, rewriting, and translation directly into any text field on the web — no copy-pasting, no context switching.
@@ -10,7 +14,7 @@ Works with **Gemini, Claude, OpenAI, Mistral, and Ollama**. Pick the provider an
 
 ### Grammar check
 
-Click the **✦** trigger button that appears when you focus any text field. The extension analyses your text and highlights every grammar, spelling, and word-choice error inline. Each highlight shows the suggested fix and a short explanation. Hit **Fix all** to apply every correction at once.
+Click the **✦** trigger button that appears when you focus any text field — or press **`⌃+Shift+G`** (Ctrl+Shift+G on Mac and Windows/Linux) to open the panel instantly. The extension analyses your text and highlights every grammar, spelling, and word-choice error inline. Each highlight shows the suggested fix and a short explanation. Hit **Fix all** to apply every correction at once.
 
 Text language support: English (US / UK), French, German, Spanish, Dutch — or **auto-detect**.
 
@@ -22,7 +26,7 @@ Supported interface languages: English, English (UK), French, German, Spanish, D
 
 ### AI rewrite
 
-Hit **✦ Improve** to let the AI rewrite your full text (or just the selected portion) for clarity and natural flow. Review the diff, then accept or dismiss.
+Hit **✦ Polish** to let the AI rewrite your full text (or just the selected portion) for clarity and natural flow. Review the suggestion, then accept or dismiss.
 
 ### Tone presets
 
@@ -39,9 +43,31 @@ Four one-click tone pills let you reshape your writing without prompting:
 
 Translate the field's content into any supported language in one click — right from the panel, without leaving the page.
 
+### Manual mode
+
+By default, the extension re-checks your text automatically as you type (debounced). Enable **manual mode** in the popup to check only when you explicitly open the panel — useful for long-form writing or slow connections.
+
+### Privacy
+
+Emails and phone numbers in your text are anonymized before being sent to the AI provider. The original text is restored after the check.
+
+### Per-site permissions
+
+The extension uses `activeTab` and per-domain optional permissions — it never requests blanket access to all URLs. Grant access to a specific site from the popup's **Trusted sites** section; the extension activates on that domain immediately without a page reload. Revoke access at any time.
+
 ### Disabled domains
 
 Add domains to a blocklist in the popup so the extension never activates on sites where you don't want it. Domains are saved immediately — no Save click needed.
+
+### Accessibility
+
+Built to WCAG 2.1 AA:
+
+- Full keyboard navigation — Tab through panel, arrow keys on tone pills, Escape to close
+- Screen reader support — `aria-live` announcements for all state changes, proper labels throughout
+- Focus-visible indicators on all interactive elements
+- 4.5:1 minimum contrast ratio on all text
+- Respects OS-level reduced motion preference
 
 ---
 
@@ -104,7 +130,7 @@ Choose any provider in the popup. Each one requires its own API key or local set
 | **Mistral**          | [console.mistral.ai](https://console.mistral.ai)       |                                                                             |
 | **Ollama**           | —                                                      | Run locally. Launch with `OLLAMA_ORIGINS=chrome-extension://* ollama serve` |
 
-Each provider exposes a **model dropdown** in the popup. Pick the model, save once, and you're done.
+Each provider exposes a **model dropdown** in the popup. Pick the model, save once, and you're done. Use the **Test connection** button to verify your key before saving.
 
 ---
 
@@ -113,6 +139,17 @@ Each provider exposes a **model dropdown** in the popup. Pick the model, save on
 All AI calls go through the **background script** (`src/background/`), never directly from the content script. This keeps API keys out of the page context and lets providers be swapped without touching the UI.
 
 The config is stored as a single namespaced object in `browser.storage.local` — API keys never leave your browser except in the requests you make to the chosen provider.
+
+### Grammar engine
+
+The grammar pipeline includes several reliability layers:
+
+- **Debounce** (1500 ms) — waits for a pause in typing before triggering a check
+- **Diff threshold** — skips re-checks when fewer than 3 characters changed
+- **LRU cache** (5 entries) — returns cached results instantly for recently-checked text
+- **AbortSignal** — cancels in-flight requests when newer input arrives
+- **Stale response discarding** — ignores responses from superseded requests
+- **Zod schema validation** — parses AI responses against a strict schema; malformed replies are rejected cleanly
 
 ### Provider architecture
 
@@ -148,16 +185,24 @@ The active provider is resolved at request time in `provider-factory.ts` based o
 | **Mistral** | `mistral-small-latest`              |
 | **Ollama**  | user-selected from running instance |
 
+### Permissions model
+
+The extension uses `activeTab` + `scripting` for baseline access, and `optional_host_permissions: ["<all_urls>"]` for per-domain trust grants. When a user trusts a domain from the popup, the extension requests that specific origin at runtime and injects the content script immediately.
+
 ---
 
 ## Tech stack
 
 - **React 19** + TypeScript — panel UI and popup
+- **Radix UI** — accessible primitives (Dialog, ToggleGroup, Toast) with built-in ARIA
 - **i18next** + react-i18next — runtime i18n with 6 locales
+- **@floating-ui/dom** — collision-aware panel positioning (flip + shift)
 - **Shadow DOM** — the panel is fully isolated from host page styles
+- **Zod** — runtime schema validation for AI grammar responses
 - **Vite** + `vite-plugin-web-extension` — MV3 build pipeline for Chrome and Firefox
 - **Vitest** + Testing Library — unit and component tests
-- **Motion** — panel animations
+- **vitest-axe** + **eslint-plugin-jsx-a11y** — automated accessibility regression testing
+- **Motion** — panel animations with reduced-motion support
 
 ---
 
@@ -167,14 +212,18 @@ The active provider is resolved at request time in `provider-factory.ts` based o
 src/
   background/         # Background script — handles all AI API calls
     providers/        # AIProvider interface + Gemini, Claude, OpenAI, Mistral, Ollama
-  content/            # Content script injected into every tab
+  content/            # Content script injected into trusted tabs
     components/       # React UI (GrammarPanel, TriggerButton, ShadowPortal…)
-    hooks/            # useFieldDetector, usePanelOrchestration, usePanelState…
+    hooks/            # useFieldDetector, usePanelOrchestration, useFloatingPosition,
+                      # useFocusOnOpen, useRestoreFocus, usePanelState…
     utils/            # Grammar checker, AI rewrite, text apply, field detector
   popup/              # Extension popup (settings)
-    components/       # ProviderSection, LanguageSection, DisabledSitesSection…
+    components/       # ProviderSection, LanguageSection, ManualModeSection,
+                      # ThemeSection, DisabledSitesSection, SitePermissionSection…
   shared/
+    components/       # VisuallyHidden (a11y sr-only utility)
     i18n/             # i18next setup + locale JSON files (en, fr, de, es, nl, en-GB)
+    pii.ts            # PII anonymization (email, phone) before AI calls
                       # Types, constants, storage, config defaults, provider models
 ```
 
@@ -191,15 +240,16 @@ src/
 
 ## Scripts
 
-| Command                 | Description                  |
-| ----------------------- | ---------------------------- |
-| `npm run dev`           | Watch build for Chrome       |
-| `npm run dev:firefox`   | Watch build for Firefox      |
-| `npm run build`         | Production build for Chrome  |
-| `npm run build:firefox` | Production build for Firefox |
-| `npm test`              | Run unit tests               |
-| `npm run lint`          | ESLint                       |
-| `npm run typecheck`     | TypeScript type check        |
+| Command                 | Description                      |
+| ----------------------- | -------------------------------- |
+| `npm run dev`           | Watch build for Chrome           |
+| `npm run dev:firefox`   | Watch build for Firefox          |
+| `npm run build`         | Production build for Chrome      |
+| `npm run build:firefox` | Production build for Firefox     |
+| `npm test`              | Run unit tests                   |
+| `npm run test:coverage` | Run unit tests with coverage     |
+| `npm run lint`          | ESLint (includes jsx-a11y rules) |
+| `npm run typecheck`     | TypeScript type check            |
 
 ---
 
