@@ -4,6 +4,10 @@ dist/
 coverage/
 .superpowers/
 .claude/
-docs/superpowers/
+docs
+store/
 .gstack/
+releases/
 releases/*.zip
+store/
+scripts/
